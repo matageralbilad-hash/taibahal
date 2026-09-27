@@ -7,7 +7,6 @@
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     
-    <!-- إعدادات الألوان والخطوط -->
     <script>
         tailwind.config = {
             theme: {
@@ -21,26 +20,19 @@
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Cairo:wght@400;700;900&display=swap');
         body { font-family: 'Cairo', sans-serif; background-color: #F8FAFC; }
-        
-        /* شريط التنقل السفلي */
         .bottom-nav { box-shadow: 0 -4px 20px rgba(0,0,0,0.08); backdrop-filter: blur(10px); background: rgba(255, 255, 255, 0.95); }
         .nav-item { transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1); }
         .nav-item.active { transform: translateY(-18px); background: linear-gradient(135deg, #7E22CE, #4C1D95); color: white; border-radius: 50%; padding: 14px; box-shadow: 0 10px 20px -3px rgba(126, 34, 206, 0.5); border: 4px solid #F8FAFC; }
-        
-        /* حركة الدولاب (Modal) */
         .modal-overlay { opacity: 0; visibility: hidden; transition: all 0.4s ease; }
         .modal-overlay.open { opacity: 1; visibility: visible; }
         .product-modal { transform: translateY(100%); transition: transform 0.5s cubic-bezier(0.4, 0, 0.2, 1); }
         .product-modal.open { transform: translateY(0); }
-        
-        /* إخفاء شريط التمرير لأناقة التصميم */
         .hide-scroll::-webkit-scrollbar { display: none; }
         .hide-scroll { -ms-overflow-style: none; scrollbar-width: none; }
     </style>
 </head>
 <body class="pb-24 text-navy">
 
-    <!-- الهيدر ومحرك البحث -->
     <header class="bg-navy text-white p-5 sticky top-0 z-40 shadow-2xl rounded-b-[2.5rem] relative overflow-hidden">
         <div class="absolute inset-0 bg-purple/10 blur-3xl rounded-full"></div>
         <div class="relative z-10 flex items-center justify-between mb-4">
@@ -50,130 +42,66 @@
             </button>
         </div>
         <p class="relative z-10 text-[11px] text-gray-300 mb-5 leading-loose font-bold opacity-90">
-            وجهتكم الأولى لأحدث الإلكترونيات والساعات الذكية، وتشكيلة استثنائية من أرقى أدوات المنزل والمطبخ الفاخرة التي تجمع بين العصرية والرفاهية.
+            وجهتكم الأولى لأحدث الإلكترونيات والساعات الذكية، وتشكيلة استثنائية من أرقى أدوات المنزل والمطبخ الفاخرة.
         </p>
         <div class="relative z-10">
-            <input type="text" id="searchInput" onkeyup="handleSearch()" placeholder="ابحث عن أجهزة، جوالات، ساعات فاخرة..." class="w-full bg-white/10 border border-white/20 rounded-2xl py-4 px-12 text-white placeholder-gray-400 focus:outline-none focus:border-gold focus:ring-1 focus:ring-gold transition backdrop-blur-md font-bold">
+            <input type="text" id="searchInput" onkeyup="handleSearch()" placeholder="ابحث عن أجهزة، جوالات..." class="w-full bg-white/10 border border-white/20 rounded-2xl py-4 px-12 text-white placeholder-gray-400 focus:outline-none focus:border-gold transition backdrop-blur-md font-bold">
             <i class="fa-solid fa-search absolute right-4 top-4 text-gray-400 text-xl"></i>
         </div>
     </header>
 
     <main class="p-4 space-y-10" id="mainContent">
-        <!-- سيتم توليد الرفوف برمجياً هنا بناءً على قاعدة البيانات -->
         <div id="shelvesContainer" class="space-y-8 text-center py-10">
             <i class="fa-solid fa-spinner fa-spin text-4xl text-purple mb-4"></i>
-            <p class="font-bold text-gray-500">جارٍ ترتيب الرفوف وعرض المنتجات...</p>
+            <p class="font-bold text-gray-500">جارٍ تحميل المنتجات...</p>
         </div>
-
-        <!-- زر عرض كل المنتجات -->
-        <button id="showAllBtn" class="hidden w-full bg-white border-2 border-navy text-navy font-black py-4 rounded-2xl shadow-sm hover:bg-navy hover:text-white transition transform active:scale-95 text-lg">
-            عرض كل المنتجات <i class="fa-solid fa-layer-group ml-2"></i>
-        </button>
+        <button id="showAllBtn" class="hidden w-full bg-white border-2 border-navy text-navy font-black py-4 rounded-2xl shadow-sm hover:bg-navy hover:text-white transition">عرض كل المنتجات</button>
     </main>
 
-    <!-- دولاب المنتج الساحر (Modal) -->
+    <!-- Modal -->
     <div id="modalOverlay" class="fixed inset-0 bg-navy/70 backdrop-blur-sm z-[60] modal-overlay" onclick="closeProductModal()"></div>
     <div id="productModal" class="fixed inset-x-0 bottom-0 h-[85vh] bg-white z-[70] rounded-t-[2.5rem] product-modal flex flex-col shadow-2xl">
-        <!-- شريط السحب العلوي -->
-        <div class="w-full flex justify-center pt-3 pb-1" onclick="closeProductModal()">
-            <div class="w-16 h-1.5 bg-gray-300 rounded-full"></div>
-        </div>
+        <div class="w-full flex justify-center pt-3 pb-1" onclick="closeProductModal()"><div class="w-16 h-1.5 bg-gray-300 rounded-full"></div></div>
+        <button onclick="closeProductModal()" class="absolute top-6 right-6 bg-white/80 w-10 h-10 rounded-full shadow-lg text-navy z-20 hover:text-red-500"><i class="fa-solid fa-xmark"></i></button>
         
-        <button onclick="closeProductModal()" class="absolute top-6 right-6 bg-white/80 backdrop-blur w-10 h-10 rounded-full shadow-lg text-navy z-20 flex items-center justify-center text-xl font-bold hover:bg-red-50 hover:text-red-500 transition"><i class="fa-solid fa-xmark"></i></button>
-        
-        <div class="absolute top-6 left-6 flex gap-3 z-20">
-            <button class="bg-white/80 backdrop-blur w-10 h-10 rounded-full shadow-lg text-red-500 text-xl hover:bg-red-50 transition"><i class="fa-regular fa-heart"></i></button>
-            <button class="bg-white/80 backdrop-blur w-10 h-10 rounded-full shadow-lg text-blue-500 text-xl hover:bg-blue-50 transition"><i class="fa-solid fa-share-nodes"></i></button>
-        </div>
-
-        <!-- صورة المنتج -->
         <div class="h-2/5 bg-gray-50 relative p-4 flex items-center justify-center">
             <img id="modalImg" src="" class="max-h-full max-w-full object-contain rounded-2xl drop-shadow-xl" alt="Product">
         </div>
 
-        <!-- تفاصيل المنتج -->
         <div class="flex-1 overflow-y-auto p-6 bg-white relative z-10 hide-scroll">
             <h2 id="modalTitle" class="text-2xl font-black mb-3 text-navy"></h2>
-            
-            <div id="modalPriceContainer" class="flex items-center gap-4 mb-4 bg-gray-50 p-3 rounded-2xl w-fit border border-gray-100">
-                <!-- يُحقن السعر برمجياً -->
-            </div>
-            
+            <div id="modalPriceContainer" class="flex items-center gap-4 mb-4 bg-gray-50 p-3 rounded-2xl w-fit border border-gray-100"></div>
             <p id="modalDesc" class="text-gray-600 leading-relaxed mb-6 font-medium text-sm"></p>
-            
             <h3 class="font-bold text-lg mb-2 text-navy border-r-4 border-gold pr-2">الملاحظات</h3>
-            <p id="modalNotes" class="text-gray-500 text-sm mb-6 bg-yellow-50 p-3 rounded-xl border border-yellow-100"></p>
-
-            <h3 class="font-bold text-lg mb-4 text-navy border-r-4 border-purple pr-2">آراء العملاء</h3>
-            <div class="space-y-3 mb-20">
-                <div class="bg-gray-50 p-3 rounded-xl border border-gray-100 flex items-start gap-3">
-                    <div class="w-8 h-8 rounded-full bg-purple/10 flex items-center justify-center text-purple font-bold text-xs">ع</div>
-                    <div>
-                        <p class="text-xs font-bold mb-1">عميل موثوق</p>
-                        <p class="text-xs text-gray-500">"منتج خرافي وتغليف ممتاز، شكراً أنوار طيبة" <span class="text-yellow-400 block mt-1">★★★★★</span></p>
-                    </div>
-                </div>
-            </div>
+            <p id="modalNotes" class="text-gray-500 text-sm mb-20 bg-yellow-50 p-3 rounded-xl border border-yellow-100"></p>
         </div>
         
-        <!-- زر الشراء والكمية -->
-        <div class="absolute bottom-0 w-full bg-white border-t border-gray-100 p-4 pb-6 flex flex-col md:flex-row items-center gap-4 shadow-[0_-15px_30px_rgba(0,0,0,0.05)] z-20 rounded-t-3xl">
-            <div class="flex w-full gap-4">
-                <div class="flex items-center justify-between bg-gray-100 rounded-2xl p-1.5 w-1/3 border border-gray-200">
-                    <button onclick="updateQty(1)" class="w-10 h-10 bg-white rounded-xl shadow-sm text-navy font-bold text-xl hover:bg-gray-50">+</button>
-                    <span id="modalQty" class="font-black text-lg">1</span>
-                    <button onclick="updateQty(-1)" class="w-10 h-10 bg-white rounded-xl shadow-sm text-navy font-bold text-xl hover:bg-gray-50">-</button>
-                </div>
-                <button onclick="addToCartAndAnimate()" class="flex-1 bg-gradient-to-r from-purple via-[#6B21A8] to-navy text-white font-black text-lg py-3 rounded-2xl shadow-xl shadow-purple/40 transform transition active:scale-95 flex justify-center items-center gap-2 overflow-hidden relative group">
-                    <span class="relative z-10">اشترِ الآن قبل النفاذ</span>
-                    <i class="fa-solid fa-cart-arrow-down relative z-10 text-xl animate-bounce"></i>
-                    <div class="absolute inset-0 bg-white/20 transform -translate-x-full group-hover:translate-x-full transition-transform duration-500"></div>
-                </button>
+        <div class="absolute bottom-0 w-full bg-white border-t border-gray-100 p-4 pb-6 flex items-center gap-4 shadow-[0_-15px_30px_rgba(0,0,0,0.05)] z-20 rounded-t-3xl">
+            <div class="flex items-center justify-between bg-gray-100 rounded-2xl p-1.5 w-1/3">
+                <button onclick="updateQty(1)" class="w-10 h-10 bg-white rounded-xl shadow-sm text-navy font-bold text-xl">+</button>
+                <span id="modalQty" class="font-black text-lg">1</span>
+                <button onclick="updateQty(-1)" class="w-10 h-10 bg-white rounded-xl shadow-sm text-navy font-bold text-xl">-</button>
             </div>
+            <button onclick="addToCartAndAnimate()" class="flex-1 bg-gradient-to-r from-purple to-navy text-white font-black text-lg py-3 rounded-2xl shadow-xl transform active:scale-95 flex justify-center items-center gap-2">
+                اشترِ الآن <i class="fa-solid fa-cart-arrow-down animate-bounce"></i>
+            </button>
         </div>
     </div>
 
-    <!-- شريط التنقل السفلي -->
+    <!-- Navigation -->
     <nav class="bottom-nav fixed bottom-0 w-full flex justify-around items-center p-2 z-50 rounded-t-3xl pb-safe">
-        <a href="Favorites.html" class="nav-item flex flex-col items-center text-gray-400 hover:text-navy"><i class="fa-regular fa-heart text-xl"></i><span class="text-[10px] mt-1 font-bold">المفضلة</span></a>
-        <a href="communication.html" class="nav-item flex flex-col items-center text-gray-400 hover:text-navy"><i class="fa-regular fa-comments text-xl"></i><span class="text-[10px] mt-1 font-bold">التواصل</span></a>
-        <!-- الرئيسية مفعلة ومرتفعة -->
+        <a href="Favorites.html" class="nav-item flex flex-col items-center text-gray-400"><i class="fa-regular fa-heart text-xl"></i><span class="text-[10px] mt-1 font-bold">المفضلة</span></a>
+        <a href="communication.html" class="nav-item flex flex-col items-center text-gray-400"><i class="fa-regular fa-comments text-xl"></i><span class="text-[10px] mt-1 font-bold">التواصل</span></a>
         <a href="index.html" class="nav-item active flex flex-col items-center shadow-lg"><i class="fa-solid fa-house text-2xl"></i><span class="text-[10px] mt-1 font-bold">الرئيسية</span></a>
-        <a href="basket.html" class="nav-item flex flex-col items-center text-gray-400 hover:text-navy relative"><i class="fa-solid fa-cart-shopping text-xl"></i><span class="text-[10px] mt-1 font-bold">السلة</span><span class="absolute top-0 right-1 w-2.5 h-2.5 bg-red-500 rounded-full border-2 border-white"></span></a>
-        <a href="around.html" class="nav-item flex flex-col items-center text-gray-400 hover:text-navy"><i class="fa-solid fa-circle-info text-xl"></i><span class="text-[10px] mt-1 font-bold">حول</span></a>
+        <a href="basket.html" class="nav-item flex flex-col items-center text-gray-400 relative"><i class="fa-solid fa-cart-shopping text-xl"></i><span class="text-[10px] mt-1 font-bold">السلة</span></a>
+        <a href="around.html" class="nav-item flex flex-col items-center text-gray-400"><i class="fa-solid fa-circle-info text-xl"></i><span class="text-[10px] mt-1 font-bold">حول</span></a>
     </nav>
 
-    <!-- قاموس البحث والذكاء الاصطناعي (مدمج لضمان العمل المباشر) -->
     <script>
-        const stopWords = ["افضل", "أفضل", "ارخص", "أرخص", "احسن", "أحسن", "خرافي", "جديد", "اصلي", "أصلي", "ممتاز", "قوي", "رخيص", "روعة", "فخم", "درجة", "اولى", "أولى", "تخفيض", "خصم", "عرض", "سعر", "اسعار", "أسعار", "شراء", "بيع", "متجر", "محل", "ماركة", "ضمان"];
-        const dictionary = {
-            "جوال": ["هاتف", "موبايل", "تلفون", "سمارتفون", "ايفون", "سامسونج", "شاومي", "هواوي"],
-            "سماعة": ["سماعات", "ايربودز", "airpods", "هدفون", "headphone", "بلوتوث"],
-            "شاشة": ["تلفزيون", "تلفاز", "شاشات", "tv", "سمارت", "smart"],
-            "ساعة": ["ساعات", "ساعه", "يد", "ذكية", "smartwatch"],
-            "خلاط": ["عصارة", "بلندر", "مفرمة", "كبة"],
-            "فرن": ["ميكروويف", "مكرويف", "بوتجاز", "غاز", "قلاية", "airfryer"]
-        };
-
-        function normalizeArabic(text) {
-            if (!text) return "";
-            return text.toLowerCase().replace(/[إأآ]/g, "ا").replace(/ة/g, "ه").replace(/ـ/g, "").replace(/\bال/g, "").replace(/[^\u0621-\u064A0-9 ]/g, "").replace(/\s+/g, " ").trim();
-        }
-
-        function isStopWord(word) {
-            const normalized = normalizeArabic(word);
-            return stopWords.some(sw => normalized === sw || normalized.startsWith(sw));
-        }
-
-        function getSynonyms(word) {
-            const w = normalizeArabic(word);
-            const variants = new Set([w]);
-            if (dictionary[w]) dictionary[w].forEach(syn => variants.add(normalizeArabic(syn)));
-            return Array.from(variants);
-        }
+        const stopWords = ["افضل","ارخص","احسن","خرافي","جديد","اصلي","ممتاز","قوي"];
+        function normalizeArabic(text) { return text ? text.toLowerCase().replace(/[إأآ]/g, "ا").replace(/ة/g, "ه").trim() : ""; }
     </script>
 
-    <!-- ربط Firebase والمنطق البرمجي للواجهة -->
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
         import { getDatabase, ref, onValue } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-database.js";
@@ -182,24 +110,20 @@
             apiKey: "AIzaSyAYA6S6xwjQcqP28M95QhCZiUg0QtIcDeY",
             authDomain: "taibah-79196.firebaseapp.com",
             databaseURL: "https://taibah-79196-default-rtdb.asia-southeast1.firebasedatabase.app",
-            projectId: "taibah-79196",
-            storageBucket: "taibah-79196.firebasestorage.app",
-            messagingSenderId: "742194490140",
-            appId: "1:742194490140:web:4862e4ff96ca3ed84628d9"
+            projectId: "taibah-79196"
         };
         const app = initializeApp(firebaseConfig);
         const db = getDatabase(app);
 
         let allProducts = [];
+        window.allProducts = allProducts; 
 
-        // دوال قص النصوص
         window.getWords = function(text, count) {
             if (!text) return '';
             const words = text.split(' ');
             return words.length > count ? words.slice(0, count).join(' ') + ' ...' : text;
         }
 
-        // إعداد الرفوف
         const shelvesConfig = [
             { id: 'الالكترونيات', title: 'الإلكترونيات والجوالات', img: 'https://images.unsplash.com/photo-1498049794561-7780e7231661?w=800&q=80' },
             { id: 'المنزل', title: 'أدوات المنزل والمطبخ', img: 'https://images.unsplash.com/photo-1556910103-1c02745a872f?w=800&q=80' },
@@ -209,6 +133,7 @@
         onValue(ref(db, 'products'), (snapshot) => {
             const data = snapshot.val();
             allProducts = [];
+            window.allProducts = allProducts;
             if(data) {
                 Object.keys(data).forEach(key => {
                     allProducts.push({ id: key, ...data[key] });
@@ -221,139 +146,85 @@
         function renderShelves(productsToRender) {
             const container = document.getElementById('shelvesContainer');
             container.innerHTML = '';
-
             if(productsToRender.length === 0) {
-                container.innerHTML = '<div class="text-center py-10 text-gray-500 font-bold">لا توجد منتجات مطابقة للبحث</div>';
+                container.innerHTML = '<div class="text-center py-10 text-gray-500 font-bold">لا توجد منتجات مطابقة</div>';
                 return;
             }
 
             shelvesConfig.forEach(shelf => {
                 const shelfProducts = productsToRender.filter(p => (p.categories || []).includes(shelf.id));
-                
                 let shelfHtml = `
                 <section class="shelf mb-10">
                     <div class="relative h-44 rounded-3xl overflow-hidden mb-5 shadow-lg bg-navy group">
-                        <img src="${shelf.img}" class="w-full h-full object-cover opacity-50 transform group-hover:scale-110 transition duration-700" alt="${shelf.title}">
+                        <img src="${shelf.img}" class="w-full h-full object-cover opacity-50">
                         <div class="absolute inset-0 bg-gradient-to-t from-navy/90 to-transparent"></div>
                         <div class="absolute inset-0 flex flex-col justify-center items-center text-white p-4">
-                            <h2 class="text-2xl font-black tracking-wide text-center drop-shadow-md">${shelf.title}</h2>
-                            <span class="bg-gold/90 text-navy font-bold px-4 py-1.5 rounded-full text-xs mt-3 shadow-lg">${shelfProducts.length} منتج</span>
+                            <h2 class="text-2xl font-black text-center">${shelf.title}</h2>
+                            <span class="bg-gold/90 text-navy font-bold px-4 py-1.5 rounded-full text-xs mt-3">${shelfProducts.length} منتج</span>
                         </div>
                     </div>
-                    
                     <div class="flex overflow-x-auto gap-4 pb-4 snap-x hide-scroll">
                 `;
 
                 if (shelfProducts.length === 0) {
-                    shelfHtml += `<div class="text-center w-full text-gray-400 text-sm font-bold py-4">سيتم إضافة منتجات قريباً...</div>`;
+                    shelfHtml += `<div class="text-center w-full text-gray-400 text-sm py-4">سيتم الإضافة قريباً...</div>`;
                 } else {
                     shelfProducts.forEach(p => {
-                        const shortDesc = window.getWords(p.description, 10);
-                        const shortNotes = window.getWords(p.description, 5); 
+                        const shortDesc = window.getWords(p.description, 8);
+                        // صورة بديلة مضمونة في حال عدم توفر صورة
+                        const fallbackImg = "https://dummyimage.com/200x200/f3f4f6/0f172a.png&text=لا+توجد+صورة";
+                        const imgUrl = p.imageUrl || fallbackImg;
                         
-                        let priceHtml = '';
-                        if (p.offerPrice) {
-                            priceHtml = `
-                                <span class="font-black text-purple text-lg">${p.offerPrice} ر.س</span>
-                                <span class="line-through text-red-400 text-xs">${p.price} ر.س</span>
-                            `;
-                        } else {
-                            priceHtml = `<span class="font-black text-purple text-lg">${p.price} ر.س</span>`;
-                        }
+                        let priceHtml = p.offerPrice ? 
+                            `<span class="font-black text-purple text-lg">${p.offerPrice} ر.س</span><span class="line-through text-red-400 text-xs">${p.price} ر.س</span>` : 
+                            `<span class="font-black text-purple text-lg">${p.price} ر.س</span>`;
 
                         shelfHtml += `
-                        <div class="snap-center shrink-0 w-[200px] bg-white rounded-3xl shadow-sm border border-gray-100 p-3 relative flex flex-col justify-between transform transition hover:-translate-y-1 hover:shadow-xl" onclick="openProductModal('${p.id}')">
+                        <div class="snap-center shrink-0 w-[200px] bg-white rounded-3xl shadow-sm border border-gray-100 p-3 relative flex flex-col justify-between" onclick="openProductModal('${p.id}')">
                             
-                            <!-- الأزرار العلوية مع z-20 و stopPropagation لمنع فتح الدولاب -->
                             <div class="absolute top-4 left-4 flex flex-col gap-2 z-20">
-                                <button class="bg-white/90 backdrop-blur p-2 rounded-full text-red-500 shadow-sm hover:bg-red-500 hover:text-white transition w-8 h-8 flex items-center justify-center relative z-20" onclick="addToFavorites(event, '${p.id}')"><i class="fa-regular fa-heart pointer-events-none"></i></button>
-                                <button class="bg-white/90 backdrop-blur p-2 rounded-full text-blue-500 shadow-sm hover:bg-blue-500 hover:text-white transition w-8 h-8 flex items-center justify-center relative z-20" onclick="shareProduct(event, '${p.id}')"><i class="fa-solid fa-share-nodes pointer-events-none"></i></button>
+                                <button class="bg-white/90 p-2 rounded-full text-red-500 shadow-sm relative z-20" onclick="addToFavorites(event, '${p.id}')"><i class="fa-regular fa-heart"></i></button>
+                                <button class="bg-white/90 p-2 rounded-full text-blue-500 shadow-sm relative z-20" onclick="shareProduct(event, '${p.id}')"><i class="fa-solid fa-share-nodes"></i></button>
                             </div>
                             
-                            <!-- صورة وبطاقة المنتج -->
                             <div class="cursor-pointer">
                                 <div class="h-36 bg-gray-50 rounded-2xl mb-3 flex items-center justify-center overflow-hidden">
-                                    <img src="${p.imageUrl || 'https://via.placeholder.com/150'}" class="max-h-full object-contain mix-blend-multiply" alt="${p.name}">
+                                    <img src="${imgUrl}" class="max-h-full object-contain" alt="صورة">
                                 </div>
-                                ${p.offerPrice ? '<div class="absolute top-4 right-4 bg-red-500 text-white text-[10px] font-bold px-2 py-1 rounded-lg animate-pulse">عرض خاص!</div>' : ''}
-                                
                                 <h3 class="font-bold text-sm text-navy line-clamp-1 mb-1">${p.name}</h3>
                                 <p class="text-[11px] text-gray-500 mb-2 h-8 overflow-hidden">${shortDesc}</p>
-                                
-                                <div class="flex flex-col mb-3 bg-gray-50 p-2 rounded-xl border border-gray-100">
-                                    ${priceHtml}
-                                </div>
-                                <p class="text-[10px] text-gray-400 italic"><span class="text-gold font-bold">ملاحظة:</span> ${shortNotes}</p>
+                                <div class="flex flex-col mb-3 bg-gray-50 p-2 rounded-xl border border-gray-100">${priceHtml}</div>
                             </div>
-
-                            <!-- زر افتح -->
-                            <button class="w-full bg-navy text-white text-sm font-bold py-2.5 rounded-xl mt-3 hover:bg-purple transition shadow-md flex justify-center items-center gap-2">
-                                افتح التفاصيل <i class="fa-solid fa-arrow-left-long text-xs"></i>
-                            </button>
+                            <button class="w-full bg-navy text-white text-sm font-bold py-2.5 rounded-xl mt-3 hover:bg-purple">افتح التفاصيل</button>
                         </div>
                         `;
                     });
                 }
-                
                 shelfHtml += `</div></section>`;
                 container.innerHTML += shelfHtml;
             });
         }
 
-        // محرك البحث الصارم
-        window.handleSearch = function() {
-            const input = document.getElementById('searchInput').value;
-            if(!input.trim()) {
-                renderShelves(allProducts);
-                return;
-            }
-
-            const searchWords = input.split(/\s+/).filter(w => w.length > 1 && !isStopWord(w));
-            if(searchWords.length === 0) {
-                renderShelves(allProducts);
-                return;
-            }
-
-            const results = allProducts.filter(p => {
-                const pText = normalizeArabic((p.name + " " + p.description + " " + (p.categories||[]).join(" ")));
-                return searchWords.every(word => {
-                    const syns = getSynonyms(word);
-                    return syns.some(syn => pText.includes(syn));
-                });
-            });
-
-            renderShelves(results);
-        };
-
-        // التعامل مع الدولاب (Modal)
         window.currentProduct = null;
         let qty = 1;
 
         window.openProductModal = function(id) {
-            const p = allProducts.find(x => x.id === id);
+            const p = window.allProducts.find(x => x.id === id);
             if(!p) return;
             window.currentProduct = p;
             qty = 1;
             document.getElementById('modalQty').innerText = qty;
 
-            document.getElementById('modalImg').src = p.imageUrl || 'https://via.placeholder.com/300';
+            const fallbackImg = "https://dummyimage.com/400x400/f3f4f6/0f172a.png&text=لا+توجد+صورة";
+            document.getElementById('modalImg').src = p.imageUrl || fallbackImg;
             document.getElementById('modalTitle').innerText = p.name;
             document.getElementById('modalDesc').innerText = p.description;
-            document.getElementById('modalNotes').innerText = "تأكد من اختيار الكمية المناسبة. التوصيل متاح وتجهيز الطلبات يتم فوراً من الفرع.";
+            document.getElementById('modalNotes').innerText = "تأكد من اختيار الكمية المناسبة. التجهيز فوري.";
             
-            let priceHtml = '';
-            if (p.offerPrice) {
-                priceHtml = `
-                    <span class="text-3xl font-black text-purple">${p.offerPrice} <span class="text-lg">ر.س</span></span>
-                    <div class="flex flex-col">
-                        <span class="line-through text-red-400 text-sm">${p.price} ر.س</span>
-                        <span class="text-[10px] font-bold text-white bg-red-500 px-2 py-0.5 rounded-md text-center mt-1">تخفيض!</span>
-                    </div>
-                `;
-            } else {
-                priceHtml = `<span class="text-3xl font-black text-purple">${p.price} <span class="text-lg">ر.س</span></span>`;
-            }
-            document.getElementById('modalPriceContainer').innerHTML = priceHtml;
+            document.getElementById('modalPriceContainer').innerHTML = p.offerPrice ? 
+                `<span class="text-3xl font-black text-purple">${p.offerPrice} <span class="text-lg">ر.س</span></span>
+                 <div class="flex flex-col"><span class="line-through text-red-400 text-sm">${p.price} ر.س</span><span class="text-[10px] bg-red-500 text-white px-2 py-0.5 rounded-md mt-1">تخفيض!</span></div>` : 
+                `<span class="text-3xl font-black text-purple">${p.price} <span class="text-lg">ر.س</span></span>`;
 
             document.getElementById('modalOverlay').classList.add('open');
             document.getElementById('productModal').classList.add('open');
@@ -365,28 +236,51 @@
         };
 
         window.updateQty = function(change) {
-            if (qty + change >= 1) {
-                qty += change;
-                document.getElementById('modalQty').innerText = qty;
-            }
+            if (qty + change >= 1) { qty += change; document.getElementById('modalQty').innerText = qty; }
         };
 
+        // --- البرمجة الحقيقية للسلة والمفضلة والمشاركة ---
+        
         window.addToCartAndAnimate = function() {
-            alert(`تم إضافة ${qty} من ${window.currentProduct.name} إلى سلة الشراء بنجاح!`);
+            const p = window.currentProduct;
+            let cart = JSON.parse(localStorage.getItem('cartAnwar')) || [];
+            let exist = cart.find(x => x.id === p.id);
+            if(exist) { exist.qty += qty; } 
+            else { p.qty = qty; cart.push(p); }
+            
+            localStorage.setItem('cartAnwar', JSON.stringify(cart));
+            alert(`تم إضافة ${qty} من ${p.name} بنجاح إلى سلة الشراء!`);
             closeProductModal();
         };
 
-        // دوال الإضافة للمفضلة والمشاركة المستقلة
         window.addToFavorites = function(e, id) {
-            e.stopPropagation(); // السحر الذي يمنع فتح الدولاب
-            alert('تم إضافة المنتج للمفضلة بنجاح!');
+            e.stopPropagation();
+            const p = window.allProducts.find(x => x.id === id);
+            if(!p) return;
+            
+            let favs = JSON.parse(localStorage.getItem('favAnwar')) || [];
+            if(!favs.find(x => x.id === id)) {
+                favs.push(p);
+                localStorage.setItem('favAnwar', JSON.stringify(favs));
+                alert('تم حفظ المنتج في المفضلة بنجاح!');
+            } else {
+                alert('هذا المنتج موجود بالفعل في المفضلة!');
+            }
         };
 
         window.shareProduct = function(e, id) {
-            e.stopPropagation(); // السحر الذي يمنع فتح الدولاب
-            alert('تم نسخ رابط المنتج للمشاركة!');
+            e.stopPropagation();
+            const p = window.allProducts.find(x => x.id === id);
+            const shareText = `شاهد هذا المنتج الرائع: ${p.name} في أنوار طيبة!`;
+            
+            if (navigator.share) {
+                navigator.share({ title: 'أنوار طيبة', text: shareText, url: window.location.href })
+                .catch(console.error);
+            } else {
+                navigator.clipboard.writeText(window.location.href + "?product=" + id);
+                alert('تم نسخ رابط المنتج للمشاركة!');
+            }
         };
-
     </script>
 </body>
 </html>

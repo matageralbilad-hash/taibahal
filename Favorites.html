@@ -7,11 +7,7 @@
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <script>
-        tailwind.config = {
-            theme: {
-                extend: { colors: { navy: '#0F172A', purple: '#7E22CE', gold: '#D4AF37' }, fontFamily: { cairo: ['Cairo', 'sans-serif'] } }
-            }
-        }
+        tailwind.config = { theme: { extend: { colors: { navy: '#0F172A', purple: '#7E22CE', gold: '#D4AF37' }, fontFamily: { cairo: ['Cairo', 'sans-serif'] } } } }
     </script>
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Cairo:wght@400;700;900&display=swap');
@@ -23,31 +19,68 @@
 <body class="pb-24 text-navy">
 
     <header class="bg-navy text-white p-6 text-center rounded-b-3xl shadow-lg mb-6">
-        <h1 class="text-2xl font-bold text-gold"><i class="fa-solid fa-heart mr-2 text-red-500"></i> قائمتي المفضلة</h1>
-        <p class="text-sm text-gray-300 mt-2">احتفظ بأروع المنتجات هنا لشرائها لاحقاً</p>
+        <h1 class="text-2xl font-bold text-gold"><i class="fa-solid fa-heart text-red-500 mr-2"></i> المفضلة</h1>
     </header>
 
     <main class="p-4 space-y-4">
-        <!-- حاوية المفضلة الفارغة التي ستعُبأ برمجياً -->
-        <div id="favoritesContainer" class="space-y-4">
-             <div class="text-center py-10 text-gray-400 font-bold">لا توجد منتجات في المفضلة حالياً</div>
-        </div>
-        
-        <!-- صندوق النصائح -->
-        <div class="bg-blue-50 border border-blue-200 p-5 rounded-2xl flex gap-4 text-blue-900 mt-8 shadow-sm">
-            <div class="text-3xl text-gold animate-bounce"><i class="fa-solid fa-lightbulb"></i></div>
-            <p class="text-sm leading-relaxed"><strong>نصيحة ذهبية:</strong> المنتجات المحفوظة في المفضلة قد تنفد من المخزون، سارع بالحجز واستغلال العروض الحالية قبل انتهائها!</p>
-        </div>
+        <!-- حاوية المفضلة الديناميكية -->
+        <div id="favoritesContainer" class="space-y-4"></div>
     </main>
 
-    <!-- شريط التنقل السفلي -->
     <nav class="bottom-nav fixed bottom-0 w-full bg-white flex justify-around items-center p-3 z-40 rounded-t-3xl">
-        <a href="around.html" class="nav-item flex flex-col items-center text-gray-400 hover:text-navy transition"><i class="fa-solid fa-circle-info text-xl"></i><span class="text-[10px] mt-1 font-bold">حول</span></a>
-        <!-- الخانة النشطة: المفضلة -->
-        <a href="Favorites.html" class="nav-item active flex flex-col items-center transition"><i class="fa-regular fa-heart text-xl"></i><span class="text-[10px] mt-1 font-bold">المفضلة</span></a>
-        <a href="index.html" class="nav-item flex flex-col items-center text-gray-400 hover:text-navy transition"><i class="fa-solid fa-house text-2xl"></i><span class="text-[10px] mt-1 font-bold">الرئيسية</span></a>
-        <a href="basket.html" class="nav-item flex flex-col items-center text-gray-400 hover:text-navy transition"><i class="fa-solid fa-cart-shopping text-xl"></i><span class="text-[10px] mt-1 font-bold">السلة</span></a>
-        <a href="communication.html" class="nav-item flex flex-col items-center text-gray-400 hover:text-navy transition"><i class="fa-regular fa-comments text-xl"></i><span class="text-[10px] mt-1 font-bold">التواصل</span></a>
+        <a href="Favorites.html" class="nav-item active flex flex-col items-center"><i class="fa-regular fa-heart text-xl"></i><span class="text-[10px] mt-1 font-bold">المفضلة</span></a>
+        <a href="index.html" class="nav-item flex flex-col items-center text-gray-400"><i class="fa-solid fa-house text-2xl"></i><span class="text-[10px] mt-1 font-bold">الرئيسية</span></a>
+        <a href="basket.html" class="nav-item flex flex-col items-center text-gray-400"><i class="fa-solid fa-cart-shopping text-xl"></i><span class="text-[10px] mt-1 font-bold">السلة</span></a>
     </nav>
+
+    <script>
+        // قراءة وعرض المنتجات المفضلة
+        function renderFavorites() {
+            let favs = JSON.parse(localStorage.getItem('favAnwar')) || [];
+            const container = document.getElementById('favoritesContainer');
+
+            if(favs.length === 0) {
+                container.innerHTML = '<div class="text-center py-10 text-gray-400 font-bold">لا توجد منتجات في المفضلة</div>';
+                return;
+            }
+
+            container.innerHTML = favs.map(p => {
+                const priceHtml = p.offerPrice ? `<span class="text-purple font-black">${p.offerPrice} ر.س</span>` : `<span class="text-purple font-black">${p.price} ر.س</span>`;
+                const fallbackImg = "https://dummyimage.com/150x150/f3f4f6/0f172a.png&text=صورة";
+
+                return `
+                <div class="bg-white rounded-2xl overflow-hidden shadow-sm border border-gray-100 flex h-36 relative">
+                    <img src="${p.imageUrl || fallbackImg}" class="w-1/3 object-contain bg-gray-50">
+                    <div class="p-3 flex-1 flex flex-col justify-between">
+                        <h3 class="font-bold text-sm line-clamp-2">${p.name}</h3>
+                        <div class="text-lg mt-1">${priceHtml}</div>
+                        <button onclick="moveToCart('${p.id}')" class="bg-navy text-white text-xs font-bold py-2 px-6 rounded-xl w-fit hover:bg-purple">أضف للسلة</button>
+                    </div>
+                    <button onclick="removeFromFav('${p.id}')" class="absolute top-2 left-2 text-red-500 bg-white/90 w-8 h-8 rounded-full shadow-sm"><i class="fa-solid fa-heart-crack"></i></button>
+                </div>`;
+            }).join('');
+        }
+
+        window.removeFromFav = function(id) {
+            let favs = JSON.parse(localStorage.getItem('favAnwar')) || [];
+            favs = favs.filter(x => x.id !== id);
+            localStorage.setItem('favAnwar', JSON.stringify(favs));
+            renderFavorites();
+        };
+
+        window.moveToCart = function(id) {
+            let favs = JSON.parse(localStorage.getItem('favAnwar')) || [];
+            let p = favs.find(x => x.id === id);
+            if(p) {
+                let cart = JSON.parse(localStorage.getItem('cartAnwar')) || [];
+                let exist = cart.find(x => x.id === id);
+                if(exist) { exist.qty += 1; } else { p.qty = 1; cart.push(p); }
+                localStorage.setItem('cartAnwar', JSON.stringify(cart));
+                alert('تم نقل المنتج إلى السلة!');
+            }
+        };
+
+        renderFavorites();
+    </script>
 </body>
 </html>
