@@ -42,15 +42,19 @@
         <div class="bg-white w-full md:w-96 rounded-t-3xl p-6 shadow-2xl relative">
             <button onclick="document.getElementById('checkoutModalOverlay').classList.add('hidden'); document.getElementById('checkoutModal').classList.add('hidden');" class="absolute top-4 left-4 text-xl text-gray-500"><i class="fa-solid fa-xmark"></i></button>
             <h2 class="text-2xl font-black text-navy mb-6 text-center">طريقة الاستلام</h2>
-            <button class="w-full text-right bg-gray-50 border border-gray-200 rounded-2xl p-4 mb-4" onclick="alert('استلام من الفرع. شكراً لطلبك!')">
+            
+            <!-- زر الاستلام من الفرع -->
+            <button class="w-full text-right bg-gray-50 border border-gray-200 rounded-2xl p-4 mb-4 hover:bg-gray-100 transition" onclick="submitOrder('استلام من الفرع')">
                 <h3 class="font-bold text-lg">استلام من الفرع</h3><p class="text-xs text-gray-500">تريم - السوق</p>
             </button>
+            
+            <!-- نموذج التوصيل -->
             <div class="border border-purple/30 rounded-2xl p-4 bg-purple/5">
                 <h3 class="font-bold text-lg text-navy mb-4">توصيل سريع</h3>
-                <input type="text" placeholder="الاسم الكريم" class="w-full bg-white border border-gray-200 rounded-xl p-3 mb-2 text-sm">
-                <input type="text" placeholder="الموقع" class="w-full bg-white border border-gray-200 rounded-xl p-3 mb-2 text-sm">
-                <input type="tel" placeholder="رقم الواتساب" class="w-full bg-white border border-gray-200 rounded-xl p-3 mb-2 text-sm">
-                <button onclick="alert('تم تأكيد الطلب للتوصيل!'); localStorage.removeItem('cartAnwar'); location.reload();" class="w-full bg-navy text-white font-bold py-3 rounded-xl mt-2">تأكيد الطلب</button>
+                <input type="text" id="delName" placeholder="الاسم الكريم" class="w-full bg-white border border-gray-200 rounded-xl p-3 mb-2 text-sm focus:border-purple outline-none">
+                <input type="text" id="delLocation" placeholder="الموقع" class="w-full bg-white border border-gray-200 rounded-xl p-3 mb-2 text-sm focus:border-purple outline-none">
+                <input type="tel" id="delPhone" placeholder="رقم الواتساب" class="w-full bg-white border border-gray-200 rounded-xl p-3 mb-2 text-sm focus:border-purple outline-none">
+                <button onclick="submitOrder('توصيل')" id="submitOrderBtn" class="w-full bg-navy text-white font-bold py-3 rounded-xl mt-2 hover:bg-purple transition">تأكيد الطلب</button>
             </div>
         </div>
     </div>
@@ -61,8 +65,8 @@
         <a href="basket.html" class="nav-item active flex flex-col items-center"><i class="fa-solid fa-cart-shopping text-xl"></i><span class="text-[10px] mt-1 font-bold">السلة</span></a>
     </nav>
 
+    <!-- سكربت إدارة السلة المحلي -->
     <script>
-        // برمجة السلة لقراءة البيانات من الذاكرة
         function renderCart() {
             let cart = JSON.parse(localStorage.getItem('cartAnwar')) || [];
             const container = document.getElementById('cartItemsContainer');
@@ -89,12 +93,12 @@
                         <h3 class="font-bold text-sm text-navy line-clamp-1">${p.name}</h3>
                         <div class="text-purple font-black mt-1">${priceToUse} ر.س</div>
                         <div class="flex items-center gap-3 mt-2">
-                            <button onclick="updateCartItem('${p.id}', 1)" class="w-6 h-6 bg-gray-100 rounded font-bold">+</button>
+                            <button onclick="updateCartItem('${p.id}', 1)" class="w-6 h-6 bg-gray-100 rounded font-bold hover:bg-gray-200">+</button>
                             <span class="text-sm font-bold">${p.qty}</span>
-                            <button onclick="updateCartItem('${p.id}', -1)" class="w-6 h-6 bg-gray-100 rounded font-bold">-</button>
+                            <button onclick="updateCartItem('${p.id}', -1)" class="w-6 h-6 bg-gray-100 rounded font-bold hover:bg-gray-200">-</button>
                         </div>
                     </div>
-                    <button onclick="removeFromCart('${p.id}')" class="text-red-400 hover:text-red-600 bg-red-50 p-2 rounded-lg"><i class="fa-solid fa-trash"></i></button>
+                    <button onclick="removeFromCart('${p.id}')" class="text-red-400 hover:text-red-600 bg-red-50 hover:bg-red-100 p-2 rounded-lg transition"><i class="fa-solid fa-trash"></i></button>
                 </div>`;
             }).join('');
 
@@ -120,7 +124,83 @@
             renderCart();
         };
 
-        renderCart(); // تشغيل الدالة عند فتح الصفحة
+        renderCart();
+    </script>
+
+    <!-- سكربت الإرسال إلى Firebase -->
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
+        import { getDatabase, ref, push, set } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-database.js";
+
+        const firebaseConfig = {
+            apiKey: "AIzaSyAYA6S6xwjQcqP28M95QhCZiUg0QtIcDeY",
+            authDomain: "taibah-79196.firebaseapp.com",
+            databaseURL: "https://taibah-79196-default-rtdb.asia-southeast1.firebasedatabase.app",
+            projectId: "taibah-79196"
+        };
+
+        const app = initializeApp(firebaseConfig);
+        const db = getDatabase(app);
+        const ordersRef = ref(db, 'orders');
+
+        window.submitOrder = async function(orderType) {
+            let cart = JSON.parse(localStorage.getItem('cartAnwar')) || [];
+            if(cart.length === 0) {
+                alert("السلة فارغة!");
+                return;
+            }
+
+            let customerName = "عميل";
+            let customerLocation = "استلام من الفرع";
+            let customerPhone = "غير محدد";
+
+            if (orderType === 'توصيل') {
+                customerName = document.getElementById('delName').value;
+                customerLocation = document.getElementById('delLocation').value;
+                customerPhone = document.getElementById('delPhone').value;
+                
+                if(!customerName || !customerLocation || !customerPhone) {
+                    alert("يرجى تعبئة جميع بيانات التوصيل (الاسم، الموقع، الرقم)");
+                    return;
+                }
+                document.getElementById('submitOrderBtn').innerText = "جارٍ الإرسال...";
+            } else {
+                // طلب اسم سريع للاستلام من الفرع ليعرفه الأدمن
+                let n = prompt("ما هو اسمك الكريم لتسجيل الطلب باسمك؟");
+                if(n) customerName = n;
+            }
+
+            let totalPrice = 0;
+            let formattedItems = cart.map(p => {
+                let price = p.offerPrice ? p.offerPrice : p.price;
+                totalPrice += (price * p.qty);
+                return { id: p.id, name: p.name, qty: p.qty, price: price };
+            });
+
+            const orderData = {
+                orderType: orderType,
+                customerName: customerName,
+                customerLocation: customerLocation,
+                customerPhone: customerPhone,
+                items: formattedItems,
+                totalPrice: totalPrice,
+                status: "جديد",
+                timestamp: new Date().toISOString()
+            };
+
+            try {
+                const newOrderRef = push(ordersRef);
+                await set(newOrderRef, orderData);
+                
+                localStorage.removeItem('cartAnwar'); // تفريغ السلة بعد نجاح الطلب
+                alert("تم استلام طلبك بنجاح! شكراً لاختيارك أنوار طيبة.");
+                location.reload(); // تحديث الصفحة
+            } catch (err) {
+                console.error(err);
+                alert("حدث خطأ أثناء إرسال الطلب. يرجى المحاولة مرة أخرى.");
+                if(document.getElementById('submitOrderBtn')) document.getElementById('submitOrderBtn').innerText = "تأكيد الطلب";
+            }
+        };
     </script>
 </body>
 </html>

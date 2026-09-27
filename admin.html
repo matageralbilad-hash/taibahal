@@ -100,7 +100,7 @@
     <!-- الخانة الثالثة: الطلبات والموصلين -->
     <main id="ordersSection" class="p-4 md:p-8 section-view hidden">
         <h1 class="text-2xl font-bold mb-6">الطلبات وخدمات التوصيل</h1>
-        <div class="space-y-4" id="ordersList">
+<div class="space-y-4" id="ordersList">
             <div class="bg-adminPanel border border-gray-800 p-6 rounded-xl">
                 <div class="flex justify-between items-center mb-4">
                     <span class="bg-purple-900/40 text-purple-300 border border-purple-800 px-3 py-1 rounded-full text-xs font-bold">شراء عبر موصل</span>
@@ -113,8 +113,7 @@
                     <span class="text-gold font-bold">المنتجات المطلوبة:</span> Samsung Galaxy S23 Ultra (الكمية: 1)
                 </div>
             </div>
-        </div>
-    </main>
+            </main>
 
     <!-- نافذة إضافة / تعديل منتج -->
     <div id="addFormModal" class="fixed inset-0 bg-black/80 flex items-center justify-center z-[100] hidden">
@@ -205,6 +204,9 @@
         const app = initializeApp(firebaseConfig);
         const db = getDatabase(app);
         const productsRef = ref(db, 'products');
+const ordersRef = ref(db, 'orders');
+
+
 
         const IK_ENDPOINT = "https://upload.imagekit.io/api/v1/files/upload";
         const IK_PRIVATE = "private_2Hrx1ZE4YUHcuNTGxDhKvUcewp8=";
@@ -397,8 +399,60 @@
             document.getElementById('addFormModal').classList.remove('hidden');
         };
 
-        window.closeModal = function() {
-            document.getElementById('addFormModal').classList.add('hidden');
+        // الاستماع للطلبات الواردة وعرضها
+        onValue(ordersRef, (snapshot) => {
+            const data = snapshot.val();
+            const ordersContainer = document.getElementById('ordersList');
+            
+            if (!data) {
+                ordersContainer.innerHTML = '<div class="text-center py-10 text-gray-500 font-bold">لا توجد طلبات حالياً</div>';
+                return;
+            }
+
+            // تحويل الكائن إلى مصفوفة وعكسها ليظهر الأحدث أولاً
+            const ordersArray = Object.keys(data).map(key => ({ id: key, ...data[key] })).reverse();
+
+            ordersContainer.innerHTML = ordersArray.map(order => {
+                const isDelivery = order.orderType === 'توصيل';
+                const badgeColor = isDelivery ? 'bg-purple-900/40 text-purple-300 border-purple-800' : 'bg-blue-900/40 text-blue-300 border-blue-800';
+                
+                // تنسيق المنتجات
+                const itemsList = order.items.map(item => `${item.name} <span class="text-gray-400">(الكمية: ${item.qty})</span>`).join(' <br> ');
+                
+                // تنسيق الوقت
+                const dateObj = new Date(order.timestamp);
+                const timeString = dateObj.toLocaleTimeString('ar-YE', { hour: '2-digit', minute: '2-digit' });
+
+                return `
+                <div class="bg-adminPanel border border-gray-800 p-6 rounded-xl relative overflow-hidden">
+                    ${order.status === 'جديد' ? '<div class="absolute top-0 right-0 w-2 h-full bg-gold"></div>' : ''}
+                    <div class="flex justify-between items-center mb-4">
+                        <span class="${badgeColor} border px-3 py-1 rounded-full text-xs font-bold">${order.orderType}</span>
+                        <span class="text-gray-400 text-sm">${timeString}</span>
+                    </div>
+                    <div class="font-bold text-lg mb-2 text-white">العميل: ${order.customerName}</div>
+                    ${isDelivery ? `<p class="text-sm text-gray-400 mb-1"><i class="fa-solid fa-location-dot ml-1"></i> الموقع: ${order.customerLocation}</p>` : ''}
+                    ${isDelivery ? `<p class="text-sm text-gray-400 mb-4"><i class="fa-brands fa-whatsapp ml-1"></i> الواتساب: <a href="https://wa.me/${order.customerPhone}" target="_blank" class="text-green-400 underline hover:text-green-300">${order.customerPhone}</a></p>` : ''}
+                    
+                    <div class="bg-adminDark p-3 rounded-lg border border-gray-800 text-sm mt-3 leading-loose">
+                        <div class="text-gold font-bold border-b border-gray-700 pb-2 mb-2">المنتجات المطلوبة:</div>
+                        ${itemsList}
+                        <div class="text-purple font-black mt-3 pt-2 border-t border-gray-700">الإجمالي: ${order.totalPrice} ر.س</div>
+                    </div>
+                    
+                    <div class="mt-4 flex gap-2">
+                        <button onclick="deleteOrder('${order.id}')" class="bg-red-900/20 text-red-500 border border-red-900/50 px-4 py-2 rounded-lg text-xs font-bold hover:bg-red-900/40 transition">حذف الطلب</button>
+                    </div>
+                </div>
+                `;
+            }).join('');
+        });
+
+        // دالة حذف الطلب بعد تجهيزه
+        window.deleteOrder = async function(id) {
+            if(confirm('هل أنت متأكد من حذف هذا الطلب؟ (قم بذلك فقط إذا سلمت الطلب للعميل)')) {
+                await remove(ref(db, `orders/${id}`));
+            }
         };
     </script>
 
