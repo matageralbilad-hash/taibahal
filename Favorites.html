@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>أنوار طيبة - المفضلة</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: { colors: { navy: '#0F172A', purple: '#7E22CE', gold: '#D4AF37' }, fontFamily: { cairo: ['Cairo', 'sans-serif'] } }
+            }
+        }
+    </script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Cairo:wght@400;700;900&display=swap');
+        body { font-family: 'Cairo', sans-serif; background-color: #F8FAFC; }
+        .bottom-nav { box-shadow: 0 -4px 20px rgba(0,0,0,0.1); }
+        .nav-item.active { transform: translateY(-15px); background-color: #7E22CE; color: white; border-radius: 50%; padding: 12px; box-shadow: 0 10px 15px -3px rgba(126, 34, 206, 0.4); }
+    </style>
+</head>
+<body class="pb-24 text-navy">
+
+    <header class="bg-navy text-white p-6 text-center rounded-b-3xl shadow-lg mb-6">
+        <h1 class="text-2xl font-bold text-gold"><i class="fa-solid fa-heart mr-2 text-red-500"></i> قائمتي المفضلة</h1>
+        <p class="text-sm text-gray-300 mt-2">احتفظ بأروع المنتجات هنا لشرائها لاحقاً</p>
+    </header>
+
+    <main class="p-4 space-y-4">
+        <!-- حاوية المفضلة الفارغة التي ستعُبأ برمجياً -->
+        <div id="favoritesContainer" class="space-y-4">
+             <div class="text-center py-10 text-gray-400 font-bold">لا توجد منتجات في المفضلة حالياً</div>
+        </div>
+        
+        <!-- صندوق النصائح -->
+        <div class="bg-blue-50 border border-blue-200 p-5 rounded-2xl flex gap-4 text-blue-900 mt-8 shadow-sm">
+            <div class="text-3xl text-gold animate-bounce"><i class="fa-solid fa-lightbulb"></i></div>
+            <p class="text-sm leading-relaxed"><strong>نصيحة ذهبية:</strong> المنتجات المحفوظة في المفضلة قد تنفد من المخزون، سارع بالحجز واستغلال العروض الحالية قبل انتهائها!</p>
+        </div>
+    </main>
+
+    <!-- شريط التنقل السفلي -->
+    <nav class="bottom-nav fixed bottom-0 w-full bg-white flex justify-around items-center p-3 z-40 rounded-t-3xl">
+        <a href="around.html" class="nav-item flex flex-col items-center text-gray-400 hover:text-navy transition"><i class="fa-solid fa-circle-info text-xl"></i><span class="text-[10px] mt-1 font-bold">حول</span></a>
+        <!-- الخانة النشطة: المفضلة -->
+        <a href="Favorites.html" class="nav-item active flex flex-col items-center transition"><i class="fa-regular fa-heart text-xl"></i><span class="text-[10px] mt-1 font-bold">المفضلة</span></a>
+        <a href="index.html" class="nav-item flex flex-col items-center text-gray-400 hover:text-navy transition"><i class="fa-solid fa-house text-2xl"></i><span class="text-[10px] mt-1 font-bold">الرئيسية</span></a>
+        <a href="basket.html" class="nav-item flex flex-col items-center text-gray-400 hover:text-navy transition"><i class="fa-solid fa-cart-shopping text-xl"></i><span class="text-[10px] mt-1 font-bold">السلة</span></a>
+        <a href="communication.html" class="nav-item flex flex-col items-center text-gray-400 hover:text-navy transition"><i class="fa-regular fa-comments text-xl"></i><span class="text-[10px] mt-1 font-bold">التواصل</span></a>
+    </nav>
+</body>
+</html>

@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>أنوار طيبة - حول المطور</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: { colors: { navy: '#0F172A', purple: '#7E22CE', gold: '#D4AF37' }, fontFamily: { cairo: ['Cairo', 'sans-serif'] } }
+            }
+        }
+    </script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Cairo:wght@400;700;900&display=swap');
+        body { font-family: 'Cairo', sans-serif; background-color: #0F172A; } /* خلفية داكنة تناسب الفخامة */
+        .bottom-nav { box-shadow: 0 -4px 20px rgba(0,0,0,0.3); background-color: rgba(255, 255, 255, 0.95); backdrop-filter: blur(10px); }
+        .nav-item.active { transform: translateY(-15px); background-color: #7E22CE; color: white; border-radius: 50%; padding: 12px; box-shadow: 0 10px 15px -3px rgba(126, 34, 206, 0.4); }
+        .glass-panel { background: rgba(255, 255, 255, 0.05); backdrop-filter: blur(15px); border: 1px solid rgba(255, 255, 255, 0.1); }
+    </style>
+</head>
+<body class="pb-24 text-white min-h-screen flex flex-col items-center justify-center relative overflow-hidden">
+    
+    <!-- خلفية جمالية متحركة (الأنوار) -->
+    <div class="absolute top-0 left-0 w-full h-full overflow-hidden z-0 pointer-events-none">
+        <div class="absolute -top-20 -right-20 w-72 h-72 bg-purple rounded-full mix-blend-screen filter blur-[80px] opacity-40 animate-pulse"></div>
+        <div class="absolute -bottom-20 -left-20 w-72 h-72 bg-blue-600 rounded-full mix-blend-screen filter blur-[80px] opacity-40"></div>
+        <div class="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-64 h-64 bg-gold rounded-full mix-blend-screen filter blur-[100px] opacity-20"></div>
+    </div>
+    
+    <div class="z-10 text-center p-8 glass-panel rounded-[2rem] mx-5 shadow-2xl relative w-full max-w-md">
+        <!-- أيقونة الكود -->
+        <div class="w-28 h-28 bg-gradient-to-br from-gold to-yellow-600 rounded-3xl mx-auto flex items-center justify-center shadow-[0_15px_30px_rgba(212,175,55,0.3)] mb-8 transform rotate-6 hover:rotate-0 transition duration-500">
+            <i class="fa-solid fa-code text-5xl text-navy"></i>
+        </div>
+        
+        <h1 class="text-4xl font-black mb-2 tracking-wider text-transparent bg-clip-text bg-gradient-to-r from-white to-gray-300">GOOD CODE</h1>
+        <p class="text-gold font-bold mb-8 text-sm tracking-[0.3em]">للبرمجة والتكنولوجيا</p>
+        
+        <div class="bg-black/30 p-5 rounded-2xl mb-8 border border-white/5">
+            <p class="text-sm text-gray-300 leading-loose">تم بناء وتطوير هذه المنظومة الرقمية القوية والفاخرة لضمان أفضل تجربة للمستخدم وأعلى كفاءة للإدارة، بتصميم عصري وأكواد نظيفة.</p>
+        </div>
+        
+        <div class="border-t border-white/10 pt-8 mt-4">
+            <p class="text-xs text-gray-400 mb-2 uppercase tracking-widest">بإدارة وتنفيذ المهندس</p>
+            <h2 class="text-2xl font-black text-white mb-4">علي السياكل</h2>
+            <a href="tel:774257557" class="inline-flex items-center justify-center gap-3 w-full text-lg font-black bg-white text-navy px-6 py-4 rounded-2xl hover:bg-gold hover:text-navy transition-all duration-300 shadow-[0_0_20px_rgba(212,175,55,0.2)] hover:shadow-[0_0_30px_rgba(212,175,55,0.5)]">
+                <i class="fa-solid fa-phone-volume animate-bounce"></i> 774257557
+            </a>
+        </div>
+    </div>
+
+    <!-- شريط التنقل السفلي -->
+    <nav class="bottom-nav fixed bottom-0 w-full flex justify-around items-center p-3 z-40 rounded-t-3xl">
+        <!-- الخانة النشطة: حول -->
+        <a href="around.html" class="nav-item active flex flex-col items-center transition"><i class="fa-solid fa-circle-info text-xl"></i><span class="text-[10px] mt-1 font-bold">حول</span></a>
+        <a href="Favorites.html" class="nav-item flex flex-col items-center text-gray-400 hover:text-navy transition"><i class="fa-regular fa-heart text-xl"></i><span class="text-[10px] mt-1 font-bold">المفضلة</span></a>
+        <a href="index.html" class="nav-item flex flex-col items-center text-gray-400 hover:text-navy transition"><i class="fa-solid fa-house text-2xl"></i><span class="text-[10px] mt-1 font-bold">الرئيسية</span></a>
+        <a href="basket.html" class="nav-item flex flex-col items-center text-gray-400 hover:text-navy transition"><i class="fa-solid fa-cart-shopping text-xl"></i><span class="text-[10px] mt-1 font-bold">السلة</span></a>
+        <a href="communication.html" class="nav-item flex flex-col items-center text-gray-400 hover:text-navy transition"><i class="fa-regular fa-comments text-xl"></i><span class="text-[10px] mt-1 font-bold">التواصل</span></a>
+    </nav>
+</body>
+</html>

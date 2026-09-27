@@ -1,0 +1,422 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>إدارة أنوار طيبة</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <script>
+        tailwind.config = {
+            theme: { extend: { colors: { adminDark: '#121212', adminPanel: '#1E1E1E', gold: '#F5C518' } } }
+        }
+    </script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Cairo:wght@400;700;900&display=swap');
+        body { font-family: 'Cairo', sans-serif; }
+    </style>
+</head>
+<body class="bg-adminDark text-white font-sans min-h-screen pb-20 md:pb-0 md:pr-64">
+
+    <!-- القائمة الجانبية (لابتوب) / السفلية (جوال) -->
+    <nav class="fixed bottom-0 w-full md:w-64 md:right-0 md:top-0 md:h-full bg-adminPanel border-t md:border-t-0 md:border-l border-gray-800 flex md:flex-col justify-around md:justify-start p-4 z-50">
+        <div class="hidden md:block text-2xl font-black text-gold mb-10 text-center">إدارة المنظومة</div>
+        
+        <button id="navTab1" onclick="switchSection('productsSection', 'navTab1')" class="nav-btn flex md:flex-row flex-col items-center md:mb-6 text-gold bg-gray-800/80 p-3 rounded-xl transition">
+            <i class="fa-solid fa-box ml-3 text-xl"></i>
+            <span class="text-sm md:text-base font-bold">إضافة وإدارة</span>
+        </button>
+        
+        <button id="navTab2" onclick="switchSection('monitorSection', 'navTab2')" class="nav-btn flex md:flex-row flex-col items-center md:mb-6 text-gray-400 hover:text-white p-3 rounded-xl transition">
+            <i class="fa-solid fa-chart-line ml-3 text-xl"></i>
+            <span class="text-sm md:text-base font-bold">مراقبة العمليات</span>
+        </button>
+        
+        <button id="navTab3" onclick="switchSection('ordersSection', 'navTab3')" class="nav-btn flex md:flex-row flex-col items-center md:mb-6 text-gray-400 hover:text-white p-3 rounded-xl transition">
+            <i class="fa-solid fa-motorcycle ml-3 text-xl"></i>
+            <span class="text-sm md:text-base font-bold">الطلبات والموصلين</span>
+        </button>
+    </nav>
+
+    <!-- الخانة الأولى: إدارة وإضافة المنتجات -->
+    <main id="productsSection" class="p-4 md:p-8 section-view">
+        <div class="flex justify-between items-center mb-8">
+            <h1 class="text-2xl font-bold">إدارة المنتجات</h1>
+            <button onclick="openAddModal()" class="bg-gold text-black px-6 py-2 rounded-lg font-bold hover:bg-yellow-500 transition shadow-lg shadow-gold/20">
+                + إضافة منتج
+            </button>
+        </div>
+
+        <!-- المربعات الإحصائية التلقائية -->
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-8">
+            <div class="bg-adminPanel border border-gray-800 p-6 rounded-xl flex flex-col items-end">
+                <span class="text-gray-400 text-sm mb-2">الإلكترونيات والجوالات</span>
+                <span id="statElectronics" class="text-4xl font-black text-gold">0</span>
+            </div>
+            <div class="bg-adminPanel border border-gray-800 p-6 rounded-xl flex flex-col items-end">
+                <span class="text-gray-400 text-sm mb-2">أدوات المنزل والمطبخ</span>
+                <span id="statHome" class="text-4xl font-black text-gold">0</span>
+            </div>
+            <div class="bg-adminPanel border border-gray-800 p-6 rounded-xl flex flex-col items-end">
+                <span class="text-gray-400 text-sm mb-2">الساعات والرفاهية</span>
+                <span id="statWatches" class="text-4xl font-black text-gold">0</span>
+            </div>
+        </div>
+
+        <!-- قائمة المنتجات المحملة من Firebase -->
+        <div id="productsList" class="space-y-4">
+            <div class="text-center py-10 text-gray-500 font-bold">جارٍ تحميل المنتجات من القاعدة...</div>
+        </div>
+    </main>
+
+    <!-- الخانة الثانية: مراقبة العمليات -->
+    <main id="monitorSection" class="p-4 md:p-8 section-view hidden">
+        <h1 class="text-2xl font-bold mb-6">مراقبة العمليات والزيارات</h1>
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-8">
+            <div class="bg-adminPanel border border-gray-800 p-6 rounded-xl text-center">
+                <div class="text-gray-400 mb-2">إجمالي المنتجات</div>
+                <div id="totalProductsCount" class="text-3xl font-black text-gold">0</div>
+            </div>
+            <div class="bg-adminPanel border border-gray-800 p-6 rounded-xl text-center">
+                <div class="text-gray-400 mb-2">حالة الاتصال بقاعدة البيانات</div>
+                <div class="text-green-400 font-bold text-lg"><i class="fa-solid fa-circle-dot ml-2"></i>متصل ونشط</div>
+            </div>
+            <div class="bg-adminPanel border border-gray-800 p-6 rounded-xl text-center">
+                <div class="text-gray-400 mb-2">حالة التخزين السحابي (ImageKit)</div>
+                <div class="text-blue-400 font-bold text-lg"><i class="fa-solid fa-cloud-arrow-up ml-2"></i>جاهز للرفع</div>
+            </div>
+        </div>
+        <div class="bg-adminPanel border border-gray-800 p-6 rounded-xl">
+            <h3 class="font-bold text-lg mb-4 text-gold">سجل العمليات الأخير</h3>
+            <div id="activityLog" class="space-y-3 text-sm text-gray-300">
+                <div class="p-3 bg-adminDark rounded-lg border border-gray-800 flex justify-between">
+                    <span>تم فتح لوحة التحكم بنجاح</span>
+                    <span class="text-gray-500 text-xs">الآن</span>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <!-- الخانة الثالثة: الطلبات والموصلين -->
+    <main id="ordersSection" class="p-4 md:p-8 section-view hidden">
+        <h1 class="text-2xl font-bold mb-6">الطلبات وخدمات التوصيل</h1>
+        <div class="space-y-4" id="ordersList">
+            <div class="bg-adminPanel border border-gray-800 p-6 rounded-xl">
+                <div class="flex justify-between items-center mb-4">
+                    <span class="bg-purple-900/40 text-purple-300 border border-purple-800 px-3 py-1 rounded-full text-xs font-bold">شراء عبر موصل</span>
+                    <span class="text-gray-400 text-sm">بين 5:00 م - 6:00 م</span>
+                </div>
+                <div class="font-bold text-lg mb-2">العميل: محمد سالم باحشوان</div>
+                <p class="text-sm text-gray-400 mb-1">الموقع: تريم - السوق - بجانب مدرسة الأخوة</p>
+                <p class="text-sm text-gray-400 mb-4">رقم الواتساب: 770123456</p>
+                <div class="bg-adminDark p-3 rounded-lg border border-gray-800 text-sm">
+                    <span class="text-gold font-bold">المنتجات المطلوبة:</span> Samsung Galaxy S23 Ultra (الكمية: 1)
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <!-- نافذة إضافة / تعديل منتج -->
+    <div id="addFormModal" class="fixed inset-0 bg-black/80 flex items-center justify-center z-[100] hidden">
+        <div class="bg-adminPanel w-full max-w-2xl rounded-2xl p-6 relative border border-gray-800 max-h-[90vh] overflow-y-auto">
+            <button onclick="closeModal()" class="absolute top-4 right-4 text-gray-400 hover:text-white text-xl"><i class="fa-solid fa-xmark"></i></button>
+            <h2 id="modalTitle" class="text-xl font-bold text-gold mb-6">إضافة منتج جديد</h2>
+            
+            <form id="productForm" onsubmit="handleFormSubmit(event)" class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <input type="hidden" id="editProductId" value="">
+                <input type="hidden" id="uploadedImageUrl" value="">
+
+                <div class="col-span-2">
+                    <label class="block text-sm text-gray-400 mb-1">اسم المنتج</label>
+                    <input type="text" id="pName" required class="w-full bg-adminDark border border-gray-700 rounded-lg p-3 text-white focus:border-gold outline-none">
+                </div>
+                <div>
+                    <label class="block text-sm text-gray-400 mb-1">السعر (ر.س)</label>
+                    <input type="number" id="pPrice" required class="w-full bg-adminDark border border-gray-700 rounded-lg p-3 text-white focus:border-gold outline-none">
+                </div>
+                <div>
+                    <label class="block text-sm text-gray-400 mb-1">سعر العرض (إن وجد)</label>
+                    <input type="number" id="pOfferPrice" class="w-full bg-adminDark border border-gray-700 rounded-lg p-3 text-white focus:border-gold outline-none">
+                </div>
+                <div class="col-span-2">
+                    <label class="block text-sm text-gray-400 mb-1">التصنيف (اختر ما يصل إلى 3 تصنيفات)</label>
+                    <div class="grid grid-cols-1 md:grid-cols-3 gap-2">
+                        <label class="flex items-center gap-2 bg-adminDark border border-gray-700 p-2.5 rounded-lg cursor-pointer">
+                            <input type="checkbox" name="categories" value="الالكترونيات" class="accent-yellow-500">
+                            <span class="text-xs">الإلكترونيات والجوالات</span>
+                        </label>
+                        <label class="flex items-center gap-2 bg-adminDark border border-gray-700 p-2.5 rounded-lg cursor-pointer">
+                            <input type="checkbox" name="categories" value="المنزل" class="accent-yellow-500">
+                            <span class="text-xs">أدوات المنزل والمطبخ</span>
+                        </label>
+                        <label class="flex items-center gap-2 bg-adminDark border border-gray-700 p-2.5 rounded-lg cursor-pointer">
+                            <input type="checkbox" name="categories" value="الساعات" class="accent-yellow-500">
+                            <span class="text-xs">الساعات والرفاهية</span>
+                        </label>
+                    </div>
+                </div>
+                <div class="col-span-2">
+                    <label class="block text-sm text-gray-400 mb-1">الملاحظات والوصف الكامل</label>
+                    <textarea id="pDesc" rows="3" required class="w-full bg-adminDark border border-gray-700 rounded-lg p-3 text-white focus:border-gold outline-none"></textarea>
+                </div>
+                <div>
+                    <label class="block text-sm text-gray-400 mb-1">وقت التجهيز للاستلام</label>
+                    <input type="text" id="pPickupTime" placeholder="مثال: جاهز الساعة 4:30 م" class="w-full bg-adminDark border border-gray-700 rounded-lg p-3 text-white focus:border-gold outline-none">
+                </div>
+                <div>
+                    <label class="block text-sm text-gray-400 mb-1">وقت خدمة التوصيل</label>
+                    <input type="text" id="pDeliveryTime" placeholder="مثال: بين 5:00 م - 6:00 م" class="w-full bg-adminDark border border-gray-700 rounded-lg p-3 text-white focus:border-gold outline-none">
+                </div>
+                
+                <!-- رفع الصورة عبر ImageKit -->
+                <div class="col-span-2 border-2 border-dashed border-gray-700 rounded-xl p-6 text-center mt-2 cursor-pointer hover:border-gold transition relative" onclick="document.getElementById('imageUpload').click()">
+                    <div id="uploadPlaceholder">
+                        <i class="fa-solid fa-cloud-arrow-up text-3xl text-gray-500 mb-2"></i>
+                        <p class="text-sm text-gray-400" id="uploadStatusText">انقر لرفع صورة المنتج (تلقائياً إلى ImageKit)</p>
+                    </div>
+                    <img id="imagePreview" src="" class="mx-auto max-h-32 rounded-lg hidden object-contain">
+                    <input type="file" id="imageUpload" class="hidden" accept="image/*" onchange="uploadToImageKit(this)">
+                </div>
+
+                <div class="col-span-2 mt-4">
+                    <button type="submit" id="submitBtn" class="w-full bg-gold text-black font-black py-3 rounded-xl text-lg hover:bg-yellow-500 transition shadow-lg shadow-gold/20">
+                        حفظ المنتج
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- كود الجافاسكربت وربط Firebase و ImageKit بالكامل -->
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
+        import { getDatabase, ref, set, push, onValue, remove, update } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-database.js";
+
+        const firebaseConfig = {
+            apiKey: "AIzaSyAYA6S6xwjQcqP28M95QhCZiUg0QtIcDeY",
+            authDomain: "taibah-79196.firebaseapp.com",
+            databaseURL: "https://taibah-79196-default-rtdb.asia-southeast1.firebasedatabase.app",
+            projectId: "taibah-79196",
+            storageBucket: "taibah-79196.firebasestorage.app",
+            messagingSenderId: "742194490140",
+            appId: "1:742194490140:web:4862e4ff96ca3ed84628d9"
+        };
+
+        const app = initializeApp(firebaseConfig);
+        const db = getDatabase(app);
+        const productsRef = ref(db, 'products');
+
+        const IK_ENDPOINT = "https://upload.imagekit.io/api/v1/files/upload";
+        const IK_PRIVATE = "private_2Hrx1ZE4YUHcuNTGxDhKvUcewp8=";
+
+        let allProductsCache = {};
+
+        // 1. الاستماع الحي لبيانات المنتجات وتحديث الشاشة والمربعات
+        onValue(productsRef, (snapshot) => {
+            const data = snapshot.val() || {};
+            allProductsCache = data;
+            renderProducts(data);
+            updateStats(data);
+        });
+
+        function renderProducts(data) {
+            const container = document.getElementById('productsList');
+            const keys = Object.keys(data);
+            if (keys.length === 0) {
+                container.innerHTML = `<div class="text-center py-10 text-gray-500 font-bold">لا توجد منتجات حالياً، انقر على "+ إضافة منتج" للبدء</div>`;
+                return;
+            }
+
+            container.innerHTML = keys.map(id => {
+                const p = data[id];
+                const catText = (p.categories || []).join('، ') || 'عام';
+                const imgSrc = p.imageUrl || 'https://via.placeholder.com/150';
+                return `
+                <div class="bg-adminPanel border border-gray-800 p-4 rounded-xl flex items-center justify-between">
+                    <div class="flex items-center gap-4">
+                        <img src="${imgSrc}" class="w-16 h-16 rounded-lg object-cover" alt="${p.name}">
+                        <div>
+                            <h3 class="font-bold text-lg text-white">${p.name}</h3>
+                            <p class="text-gray-400 text-sm">${catText} | <span class="text-gold font-bold">${p.price} ر.س</span> ${p.offerPrice ? `<span class="line-through text-xs text-gray-500 mr-2">${p.offerPrice} ر.س</span>` : ''}</p>
+                        </div>
+                    </div>
+                    <div class="flex gap-2">
+                        <button onclick="window.editProduct('${id}')" class="w-10 h-10 rounded-lg border border-gray-700 text-gold flex items-center justify-center hover:bg-gray-800 transition"><i class="fa-solid fa-pen"></i></button>
+                        <button onclick="window.deleteProduct('${id}')" class="w-10 h-10 rounded-lg border border-red-900/50 text-red-500 flex items-center justify-center hover:bg-red-900/20 transition"><i class="fa-solid fa-trash"></i></button>
+                    </div>
+                </div>
+                `;
+            }).join('');
+        }
+
+        function updateStats(data) {
+            let elCount = 0;
+            let homeCount = 0;
+            let watchesCount = 0;
+            const keys = Object.keys(data);
+
+            keys.forEach(k => {
+                const cats = data[k].categories || [];
+                if (cats.includes('الالكترونيات')) elCount++;
+                if (cats.includes('المنزل')) homeCount++;
+                if (cats.includes('الساعات')) watchesCount++;
+            });
+
+            document.getElementById('statElectronics').innerText = elCount;
+            document.getElementById('statHome').innerText = homeCount;
+            document.getElementById('statWatches').innerText = watchesCount;
+            document.getElementById('totalProductsCount').innerText = keys.length;
+        }
+
+        // 2. رفع الصورة تلقائياً لـ ImageKit
+        window.uploadToImageKit = async function(input) {
+            const file = input.files[0];
+            if (!file) return;
+
+            const statusText = document.getElementById('uploadStatusText');
+            statusText.innerHTML = `<i class="fa-solid fa-spinner fa-spin ml-2"></i> جارٍ رفع الصورة السحابية...`;
+
+            const formData = new FormData();
+            formData.append("file", file);
+            formData.append("fileName", file.name);
+            formData.append("useUniqueFileName", "true");
+
+            try {
+                const res = await fetch(IK_ENDPOINT, {
+                    method: "POST",
+                    headers: {
+                        "Authorization": "Basic " + btoa(IK_PRIVATE + ":")
+                    },
+                    body: formData
+                });
+                const result = await res.json();
+                if (result.url) {
+                    document.getElementById('uploadedImageUrl').value = result.url;
+                    document.getElementById('imagePreview').src = result.url;
+                    document.getElementById('imagePreview').classList.remove('hidden');
+                    statusText.innerText = "تم رفع الصورة بنجاح!";
+                } else {
+                    alert("حدث خطأ أثناء رفع الصورة");
+                    statusText.innerText = "انقر لرفع صورة المنتج";
+                }
+            } catch (err) {
+                console.error(err);
+                alert("تعذر الاتصال بخادم رفع الصور");
+                statusText.innerText = "انقر لرفع صورة المنتج";
+            }
+        };
+
+        // 3. إضافة وتعديل وحفظ المنتج في Firebase
+        window.handleFormSubmit = async function(e) {
+            e.preventDefault();
+            const editId = document.getElementById('editProductId').value;
+            const name = document.getElementById('pName').value;
+            const price = parseFloat(document.getElementById('pPrice').value);
+            const offerPrice = document.getElementById('pOfferPrice').value ? parseFloat(document.getElementById('pOfferPrice').value) : null;
+            const description = document.getElementById('pDesc').value;
+            const pickupTime = document.getElementById('pPickupTime').value;
+            const deliveryTime = document.getElementById('pDeliveryTime').value;
+            const imageUrl = document.getElementById('uploadedImageUrl').value;
+
+            const selectedCategories = Array.from(document.querySelectorAll('input[name="categories"]:checked')).map(cb => cb.value);
+
+            const payload = {
+                name,
+                price,
+                offerPrice,
+                description,
+                pickupTime,
+                deliveryTime,
+                imageUrl,
+                categories: selectedCategories,
+                updatedAt: new Date().toISOString()
+            };
+
+            const submitBtn = document.getElementById('submitBtn');
+            submitBtn.disabled = true;
+            submitBtn.innerText = "جارٍ الحفظ...";
+
+            try {
+                if (editId) {
+                    await update(ref(db, `products/${editId}`), payload);
+                } else {
+                    payload.createdAt = new Date().toISOString();
+                    const newRef = push(productsRef);
+                    await set(newRef, payload);
+                }
+                closeModal();
+            } catch (err) {
+                console.error(err);
+                alert("حدث خطأ أثناء حفظ المنتج في Firebase");
+            } finally {
+                submitBtn.disabled = false;
+                submitBtn.innerText = "حفظ المنتج";
+            }
+        };
+
+        // 4. الحذف
+        window.deleteProduct = async function(id) {
+            if (confirm("هل أنت متأكد من رغبتك في حذف هذا المنتج نهائياً من المنظومة؟")) {
+                await remove(ref(db, `products/${id}`));
+            }
+        };
+
+        // 5. فتح التعديل
+        window.editProduct = function(id) {
+            const p = allProductsCache[id];
+            if (!p) return;
+            document.getElementById('editProductId').value = id;
+            document.getElementById('pName').value = p.name || '';
+            document.getElementById('pPrice').value = p.price || '';
+            document.getElementById('pOfferPrice').value = p.offerPrice || '';
+            document.getElementById('pDesc').value = p.description || '';
+            document.getElementById('pPickupTime').value = p.pickupTime || '';
+            document.getElementById('pDeliveryTime').value = p.deliveryTime || '';
+            document.getElementById('uploadedImageUrl').value = p.imageUrl || '';
+            
+            if (p.imageUrl) {
+                document.getElementById('imagePreview').src = p.imageUrl;
+                document.getElementById('imagePreview').classList.remove('hidden');
+            }
+
+            document.querySelectorAll('input[name="categories"]').forEach(cb => {
+                cb.checked = (p.categories || []).includes(cb.value);
+            });
+
+            document.getElementById('modalTitle').innerText = "تعديل المنتج";
+            document.getElementById('addFormModal').classList.remove('hidden');
+        };
+
+        window.openAddModal = function() {
+            document.getElementById('productForm').reset();
+            document.getElementById('editProductId').value = '';
+            document.getElementById('uploadedImageUrl').value = '';
+            document.getElementById('imagePreview').classList.add('hidden');
+            document.getElementById('uploadStatusText').innerText = "انقر لرفع صورة المنتج (تلقائياً إلى ImageKit)";
+            document.getElementById('modalTitle').innerText = "إضافة منتج جديد";
+            document.getElementById('addFormModal').classList.remove('hidden');
+        };
+
+        window.closeModal = function() {
+            document.getElementById('addFormModal').classList.add('hidden');
+        };
+    </script>
+
+    <!-- سكريبت التنقل بين الخانات -->
+    <script>
+        function switchSection(sectionId, tabId) {
+            document.querySelectorAll('.section-view').forEach(sec => sec.classList.add('hidden'));
+            document.getElementById(sectionId).classList.remove('hidden');
+
+            document.querySelectorAll('.nav-btn').forEach(btn => {
+                btn.classList.remove('text-gold', 'bg-gray-800/80');
+                btn.classList.add('text-gray-400');
+            });
+
+            const activeBtn = document.getElementById(tabId);
+            activeBtn.classList.remove('text-gray-400');
+            activeBtn.classList.add('text-gold', 'bg-gray-800/80');
+        }
+    </script>
+</body>
+</html>

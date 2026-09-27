@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>أنوار طيبة - التواصل</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: { colors: { navy: '#0F172A', purple: '#7E22CE', gold: '#D4AF37' }, fontFamily: { cairo: ['Cairo', 'sans-serif'] } }
+            }
+        }
+    </script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Cairo:wght@400;700;900&display=swap');
+        body { font-family: 'Cairo', sans-serif; background-color: #F8FAFC; }
+        .bottom-nav { box-shadow: 0 -4px 20px rgba(0,0,0,0.1); }
+        .nav-item.active { transform: translateY(-15px); background-color: #7E22CE; color: white; border-radius: 50%; padding: 12px; box-shadow: 0 10px 15px -3px rgba(126, 34, 206, 0.4); }
+    </style>
+</head>
+<body class="pb-24 text-navy">
+
+    <header class="bg-navy text-white p-6 text-center rounded-b-3xl shadow-lg mb-8 relative overflow-hidden">
+        <div class="absolute inset-0 opacity-10 bg-[url('https://www.transparenttextures.com/patterns/cubes.png')]"></div>
+        <h1 class="text-2xl font-bold text-gold mb-2 relative z-10">تواصل معنا</h1>
+        <p class="text-sm text-gray-300 relative z-10">نحن هنا لخدمتك والرد على كافة استفساراتك بأسرع وقت</p>
+    </header>
+
+    <main class="p-4">
+        <div class="bg-white p-6 rounded-3xl shadow-sm border border-gray-100 mb-8 flex flex-col items-center relative overflow-hidden">
+            <div class="absolute -right-4 -top-4 w-20 h-20 bg-purple/5 rounded-full blur-xl"></div>
+            <div class="absolute -left-4 -bottom-4 w-20 h-20 bg-gold/10 rounded-full blur-xl"></div>
+            
+            <div class="w-20 h-20 bg-green-50 text-green-500 flex items-center justify-center rounded-full text-4xl mb-4 shadow-inner"><i class="fa-brands fa-whatsapp"></i></div>
+            <h2 class="font-bold text-lg mb-2 text-navy">تواصل مباشر وسريع</h2>
+            <p class="text-2xl font-black text-navy dir-ltr tracking-wider">+967 770 066 782</p>
+        </div>
+        
+        <h3 class="font-bold text-xl mb-4 text-navy px-2 border-r-4 border-gold">ضع رسالتك أو استفسارك هنا:</h3>
+        <form class="space-y-4" onsubmit="event.preventDefault(); 
+            var name = document.getElementById('clientName').value;
+            var subject = document.getElementById('subject').value;
+            var msg = document.getElementById('msgDetails').value;
+            var fullMsg = 'الاسم: ' + name + '%0Aالموضوع: ' + subject + '%0Aالتفاصيل: ' + msg;
+            window.open('https://wa.me/967770066782?text=' + fullMsg, '_blank');">
+            
+            <input type="text" id="clientName" placeholder="الاسم الكريم" class="w-full bg-white border border-gray-200 rounded-2xl p-4 focus:border-purple focus:ring-2 focus:ring-purple/20 outline-none shadow-sm transition" required>
+            <input type="text" id="subject" placeholder="عنوان الشكوى أو الاستفسار" class="w-full bg-white border border-gray-200 rounded-2xl p-4 focus:border-purple focus:ring-2 focus:ring-purple/20 outline-none shadow-sm transition" required>
+            <textarea id="msgDetails" placeholder="التفاصيل كاملة..." class="w-full bg-white border border-gray-200 rounded-2xl p-4 h-36 focus:border-purple focus:ring-2 focus:ring-purple/20 outline-none shadow-sm transition resize-none" required></textarea>
+            <button type="submit" class="w-full bg-gradient-to-r from-purple to-navy text-white font-black text-lg py-4 rounded-2xl shadow-lg hover:opacity-90 transform active:scale-95 transition flex justify-center items-center gap-3">
+                <i class="fa-solid fa-paper-plane text-xl"></i> إرسال عبر واتساب
+            </button>
+        </form>
+    </main>
+
+    <!-- شريط التنقل السفلي -->
+    <nav class="bottom-nav fixed bottom-0 w-full bg-white flex justify-around items-center p-3 z-40 rounded-t-3xl">
+        <a href="around.html" class="nav-item flex flex-col items-center text-gray-400 hover:text-navy transition"><i class="fa-solid fa-circle-info text-xl"></i><span class="text-[10px] mt-1 font-bold">حول</span></a>
+        <a href="Favorites.html" class="nav-item flex flex-col items-center text-gray-400 hover:text-navy transition"><i class="fa-regular fa-heart text-xl"></i><span class="text-[10px] mt-1 font-bold">المفضلة</span></a>
+        <a href="index.html" class="nav-item flex flex-col items-center text-gray-400 hover:text-navy transition"><i class="fa-solid fa-house text-2xl"></i><span class="text-[10px] mt-1 font-bold">الرئيسية</span></a>
+        <a href="basket.html" class="nav-item flex flex-col items-center text-gray-400 hover:text-navy transition"><i class="fa-solid fa-cart-shopping text-xl"></i><span class="text-[10px] mt-1 font-bold">السلة</span></a>
+        <!-- الخانة النشطة: التواصل -->
+        <a href="communication.html" class="nav-item active flex flex-col items-center transition"><i class="fa-regular fa-comments text-xl"></i><span class="text-[10px] mt-1 font-bold">التواصل</span></a>
+    </nav>
+</body>
+</html>
