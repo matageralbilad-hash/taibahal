@@ -221,11 +221,11 @@
                     allProducts.push({ id: key, ...data[key] });
                 });
             }
-            renderShelves(allProducts);
+            window.renderShelves(allProducts);
             document.getElementById('showAllBtn').classList.remove('hidden');
         });
 
-        function renderShelves(productsToRender) {
+        window.renderShelves = function(productsToRender) {
             const container = document.getElementById('shelvesContainer');
             container.innerHTML = '';
             if(productsToRender.length === 0) {
