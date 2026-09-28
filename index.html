@@ -374,6 +374,17 @@ window.handleSearch = function() {
                 alert('تم نسخ رابط المنتج للمشاركة!');
             }
         };
+        
+        // ربط الدوال بالواجهة بشكل آمن خارج الـ Module
+        Object.assign(window, {
+            handleSearch: window.handleSearch,
+            openProductModal: window.openProductModal,
+            closeProductModal: window.closeProductModal,
+            updateQty: window.updateQty,
+            addToCartAndAnimate: window.addToCartAndAnimate,
+            addToFavorites: window.addToFavorites,
+            shareProduct: window.shareProduct
+        });
     </script>
 </body>
 </html>
