@@ -352,8 +352,7 @@ const ordersRef = ref(db, 'orders');
             const submitBtn = document.getElementById('submitBtn');
             submitBtn.disabled = true;
             submitBtn.innerText = "جارٍ الحفظ...";
-
-            try {
+try {
                 if (editId) {
                     await update(ref(db, `products/${editId}`), payload);
                 } else {
@@ -361,7 +360,7 @@ const ordersRef = ref(db, 'orders');
                     const newRef = push(productsRef);
                     await set(newRef, payload);
                 }
-                closeModal();
+                window.closeModal();
             } catch (err) {
                 console.error(err);
                 alert("حدث خطأ أثناء حفظ المنتج في Firebase");
