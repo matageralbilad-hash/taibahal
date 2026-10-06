@@ -68,9 +68,58 @@
             <i class="fa-solid fa-spinner fa-spin text-4xl text-purple mb-4"></i>
             <p class="font-bold text-gray-500">جارٍ تحميل المنتجات...</p>
         </div>
-        <button id="showAllBtn" class="hidden w-full bg-white border-2 border-navy text-navy font-black py-4 rounded-2xl shadow-sm hover:bg-navy hover:text-white transition">عرض كل المنتجات</button>
-    </main>
+       <!-- قسم البطاقات التفاعلية (خدمة العملاء والفروع) -->
+        <div class="relative w-full overflow-hidden mt-8 mb-4">
+            <!-- مؤشر السحب للعميل -->
+            <div class="text-center mb-3 flex items-center justify-center gap-2 text-gray-400 text-[11px] font-bold animate-pulse">
+                <i class="fa-solid fa-arrows-left-right"></i> اسحب لليمين واليسار 
+            </div>
 
+            <!-- حاوية السحب (Slider) -->
+            <div class="flex overflow-x-auto snap-x snap-mandatory gap-4 pb-4 hide-scroll w-full">
+                
+                <!-- البطاقة الأولى: خدمة العملاء (لون برتقالي فخم) -->
+                <!-- تم جعل العرض 90% لكي يظهر جزء من البطاقة الثانية ويشجع العميل على السحب -->
+                <div class="w-[92%] shrink-0 snap-center bg-gradient-to-r from-[#d97706] via-[#ea580c] to-[#c2410c] rounded-[2rem] p-6 text-white shadow-xl shadow-orange-500/20 relative overflow-hidden flex items-center border border-orange-400/30">
+                    <!-- رسمة زخرفية في الخلفية -->
+                    <div class="absolute -right-10 -top-10 w-40 h-40 bg-white/10 rounded-full blur-3xl"></div>
+                    <div class="absolute -left-10 -bottom-10 w-40 h-40 bg-black/20 rounded-full blur-3xl"></div>
+
+                    <div class="flex-1 z-10">
+                        <h3 class="text-2xl font-black mb-1 drop-shadow-md">خدمة العملاء</h3>
+                        <p class="text-[11px] font-bold text-orange-100 mb-4 opacity-90">متواجدين لخدمتكم على مدار الساعة</p>
+                        <!-- زر الاتصال -->
+                        <a href="tel:779414977" class="inline-flex items-center gap-3 bg-black/20 hover:bg-black/40 backdrop-blur-md border border-white/20 px-5 py-2.5 rounded-2xl text-sm font-black transition shadow-lg">
+                            <i class="fa-solid fa-phone-volume text-gold animate-bounce"></i> 779414977
+                        </a>
+                    </div>
+                    <!-- أيقونة موظف الدعم (بديلة للصورة) -->
+                    <div class="z-10 ml-2">
+                        <i class="fa-solid fa-user-headset text-[5rem] text-white/90 drop-shadow-2xl transform -scale-x-100"></i>
+                    </div>
+                </div>
+
+                <!-- البطاقة الثانية: الفروع ومراكز التسليم -->
+                <div class="w-[92%] shrink-0 snap-center bg-gradient-to-br from-navy to-slate-900 rounded-[2rem] p-6 text-white shadow-xl shadow-navy/20 relative overflow-hidden flex flex-col justify-center items-center text-center border border-gray-700">
+                    <!-- رسمة زخرفية -->
+                    <div class="absolute top-0 left-0 w-full h-full bg-[url('https://www.transparenttextures.com/patterns/stardust.png')] opacity-20"></div>
+                    <div class="absolute -bottom-6 -right-6 w-32 h-32 bg-gold/10 rounded-full blur-2xl"></div>
+
+                    <div class="w-14 h-14 bg-white/10 backdrop-blur-md rounded-full flex items-center justify-center text-gold text-2xl mb-3 shadow-inner z-10 border border-white/5">
+                        <i class="fa-solid fa-location-dot animate-bounce"></i>
+                    </div>
+                    <h3 class="text-xl font-black text-gold mb-3 z-10 drop-shadow-md">مراكز التسليم الرئيسية</h3>
+                    
+                    <div class="bg-black/40 border border-gray-700 px-5 py-2 rounded-xl z-10 w-full mb-4">
+                        <p class="text-sm font-bold text-white">حضرموت / تريم / السوق</p>
+                    </div>
+
+                    <p class="text-[10px] text-gray-400 z-10 font-bold bg-white/5 px-3 py-1 rounded-full"><i class="fa-solid fa-clock-rotate-left mr-1"></i> سيتم إضافة فروع في أقرب وقت بإذن الله تعالى</p>
+                </div>
+
+            </div>
+        </div>
+    </main>
 <!-- شاشة العروض الحصرية المستقلة -->
     <div id="offersViewWindow" class="fixed inset-0 bg-[#F8FAFC] z-[55] hidden flex-col">
         <!-- الهيدر الخاص بصفحة العروض -->
@@ -261,10 +310,7 @@
                     allProducts.push({ id: key, ...data[key] });
                 });
             }
-            window.renderShelves(allProducts);
-            document.getElementById('showAllBtn').classList.remove('hidden');
-        });
-
+            
         window.renderShelves = function(productsToRender) {
             const container = document.getElementById('shelvesContainer');
             container.innerHTML = '';
@@ -372,65 +418,64 @@ window.handleSearch = function() {
             if (qty + change >= 1) { qty += change; document.getElementById('modalQty').innerText = qty; }
         };
 
+window.openOffersView = function() {
+            // 1. تصفية المنتجات التي تمتلك سعر عرض (offerPrice) وموجود
+            let offers = window.allProducts.filter(p => p.offerPrice && parseFloat(p.offerPrice) > 0);
+            
+            // 2. ترتيب المنتجات من الأحدث للأقدم
+            offers.sort((a, b) => new Date(b.updatedAt || b.createdAt || 0) - new Date(a.updatedAt || a.createdAt || 0));
+
+            const container = document.getElementById('exclusiveOffersGrid');
+            
+            if(offers.length === 0) {
+                container.innerHTML = '<div class="col-span-2 md:col-span-4 text-center py-20 text-gray-500 font-bold text-lg"><i class="fa-solid fa-box-open text-4xl mb-4 opacity-50 block"></i>لا توجد عروض حصرية حالياً</div>';
+            } else {
+                container.innerHTML = offers.map(p => {
+                    const shortDesc = window.getWords(p.description, 8);
+                    const fallbackImg = "https://dummyimage.com/200x200/f3f4f6/0f172a.png&text=لا+توجد+صورة";
+                    const imgUrl = p.imageUrl || fallbackImg;
+                    
+                    // نفس تصميم البطاقة الموجود في الرئيسية مع لمسات حمراء للعروض
+                    return `
+                    <div class="bg-white rounded-3xl shadow-md border-2 border-red-50 p-3 relative flex flex-col justify-between overflow-hidden" onclick="openProductModal('${p.id}')">
+                        <!-- شريط تخفيض -->
+                        <div class="absolute top-0 right-0 bg-red-600 text-white text-[10px] font-black px-3 py-1 rounded-bl-xl z-30 shadow-sm">عرض خاص!</div>
+                        
+                        <div class="absolute top-4 left-4 flex flex-col gap-2 z-20">
+                            <button class="bg-white/90 p-2 rounded-full text-red-500 shadow-sm relative z-20" onclick="addToFavorites(event, '${p.id}')"><i class="fa-regular fa-heart"></i></button>
+                        </div>
+                        
+                        <div class="cursor-pointer mt-3">
+                            <div class="h-32 bg-gray-50 rounded-2xl mb-3 flex items-center justify-center overflow-hidden relative">
+                                <img src="${imgUrl}" class="max-h-full object-contain hover:scale-110 transition duration-300" alt="صورة">
+                            </div>
+                            <h3 class="font-bold text-sm text-navy line-clamp-1 mb-1">${p.name}</h3>
+                            <p class="text-[11px] text-gray-500 mb-2 h-8 overflow-hidden">${shortDesc}</p>
+                            <div class="flex flex-col mb-3 bg-red-50/50 p-2 rounded-xl border border-red-100">
+                                <span class="font-black text-red-600 text-lg">${p.offerPrice} ر.س</span>
+                                <span class="line-through text-gray-400 text-[10px]">${p.price} ر.س</span>
+                            </div>
+                        </div>
+                        <button class="w-full bg-red-600 text-white text-xs font-bold py-2.5 rounded-xl mt-auto hover:bg-red-700 shadow-lg shadow-red-500/30">التفاصيل والشراء</button>
+                    </div>
+                    `;
+                }).join('');
+            }
+
+            // إظهار النافذة الجديدة
+            const view = document.getElementById('offersViewWindow');
+            view.classList.remove('hidden');
+            view.classList.add('flex');
+        };
+
+        window.closeOffersView = function() {
+            const view = document.getElementById('offersViewWindow');
+            view.classList.add('hidden');
+            view.classList.remove('flex');
+        };
+
 // دوال العروض الحصرية
-        window.openOffersView = function() {
-            // 1. تصفية المنتجات التي تمتلك سعر عرض (offerPrice) وموجود
-            let offers = window.allProducts.filter(p => p.offerPrice && parseFloat(p.offerPrice) > 0);
-            
-            // 2. ترتيب المنتجات من الأحدث للأقدم
-            offers.sort((a, b) => new Date(b.updatedAt || b.createdAt || 0) - new Date(a.updatedAt || a.createdAt || 0));
-
-            const container = document.getElementById('exclusiveOffersGrid');
-            
-            if(offers.length === 0) {
-                container.innerHTML = '<div class="col-span-2 md:col-span-4 text-center py-20 text-gray-500 font-bold text-lg"><i class="fa-solid fa-box-open text-4xl mb-4 opacity-50 block"></i>لا توجد عروض حصرية حالياً</div>';
-            } else {
-                container.innerHTML = offers.map(p => {
-                    const shortDesc = window.getWords(p.description, 8);
-                    const fallbackImg = "https://dummyimage.com/200x200/f3f4f6/0f172a.png&text=لا+توجد+صورة";
-                    const imgUrl = p.imageUrl || fallbackImg;
-                    
-                    // نفس تصميم البطاقة الموجود في الرئيسية مع لمسات حمراء للعروض
-                    return `
-                    <div class="bg-white rounded-3xl shadow-md border-2 border-red-50 p-3 relative flex flex-col justify-between overflow-hidden" onclick="openProductModal('${p.id}')">
-                        <!-- شريط تخفيض -->
-                        <div class="absolute top-0 right-0 bg-red-600 text-white text-[10px] font-black px-3 py-1 rounded-bl-xl z-30 shadow-sm">عرض خاص!</div>
-                        
-                        <div class="absolute top-4 left-4 flex flex-col gap-2 z-20">
-                            <button class="bg-white/90 p-2 rounded-full text-red-500 shadow-sm relative z-20" onclick="addToFavorites(event, '${p.id}')"><i class="fa-regular fa-heart"></i></button>
-                        </div>
-                        
-                        <div class="cursor-pointer mt-3">
-                            <div class="h-32 bg-gray-50 rounded-2xl mb-3 flex items-center justify-center overflow-hidden relative">
-                                <img src="${imgUrl}" class="max-h-full object-contain hover:scale-110 transition duration-300" alt="صورة">
-                            </div>
-                            <h3 class="font-bold text-sm text-navy line-clamp-1 mb-1">${p.name}</h3>
-                            <p class="text-[11px] text-gray-500 mb-2 h-8 overflow-hidden">${shortDesc}</p>
-                            <div class="flex flex-col mb-3 bg-red-50/50 p-2 rounded-xl border border-red-100">
-                                <span class="font-black text-red-600 text-lg">${p.offerPrice} ر.س</span>
-                                <span class="line-through text-gray-400 text-[10px]">${p.price} ر.س</span>
-                            </div>
-                        </div>
-                        <button class="w-full bg-red-600 text-white text-xs font-bold py-2.5 rounded-xl mt-auto hover:bg-red-700 shadow-lg shadow-red-500/30">التفاصيل والشراء</button>
-                    </div>
-                    `;
-                }).join('');
-            }
-
-            // إظهار النافذة الجديدة
-            const view = document.getElementById('offersViewWindow');
-            view.classList.remove('hidden');
-            view.classList.add('flex');
-        };
-
-        window.closeOffersView = function() {
-            const view = document.getElementById('offersViewWindow');
-            view.classList.add('hidden');
-            view.classList.remove('flex');
-        };
-
-        // --- البرمجة الحقيقية للسلة والمفضلة والمشاركة ---
-        
+                
         window.addToCartAndAnimate = function() {
             const p = window.currentProduct;
             let cart = JSON.parse(localStorage.getItem('cartAnwar')) || [];
