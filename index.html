@@ -51,12 +51,46 @@
     </header>
 
     <main class="p-4 space-y-10" id="mainContent">
+       <!-- بانر العروض الحصرية -->
+        <div onclick="window.openOffersView()" class="relative h-56 rounded-[2.5rem] overflow-hidden shadow-2xl cursor-pointer group transform transition hover:scale-[1.02] mt-2 border border-red-500/20">
+            <img src="https://images.unsplash.com/photo-1607083206869-4c7672e72a8a?w=800&q=80" class="w-full h-full object-cover opacity-90 group-hover:opacity-100 transition duration-700 transform group-hover:scale-110">
+            <div class="absolute inset-0 bg-gradient-to-r from-red-900/95 via-red-900/80 to-transparent"></div>
+            <div class="absolute inset-0 flex flex-col justify-center p-6 text-white w-3/4 md:w-1/2 z-10">
+                <div class="bg-red-500 text-white text-[10px] font-black px-3 py-1 rounded-full w-fit mb-3 shadow-lg animate-pulse">لفترة محدودة</div>
+                <h2 class="text-3xl font-black mb-2 drop-shadow-md"><i class="fa-solid fa-fire text-yellow-500 mr-1"></i> العروض الحصرية</h2>
+                <p class="text-xs text-gray-200 leading-relaxed font-bold mb-4">أقوى التخفيضات والأسعار المحطمة! تصفح المنتجات المخفضة قبل نفاذ الكمية.</p>
+                <div class="bg-white/20 backdrop-blur-md border border-white/30 text-white text-xs font-bold py-2 px-4 rounded-xl w-fit flex items-center gap-2 group-hover:bg-white group-hover:text-red-900 transition shadow-lg">
+                    تصفح العروض الآن <i class="fa-solid fa-arrow-left animate-bounce"></i>
+                </div>
+            </div>
+        </div>
         <div id="shelvesContainer" class="space-y-8 text-center py-10">
             <i class="fa-solid fa-spinner fa-spin text-4xl text-purple mb-4"></i>
             <p class="font-bold text-gray-500">جارٍ تحميل المنتجات...</p>
         </div>
         <button id="showAllBtn" class="hidden w-full bg-white border-2 border-navy text-navy font-black py-4 rounded-2xl shadow-sm hover:bg-navy hover:text-white transition">عرض كل المنتجات</button>
     </main>
+
+<!-- شاشة العروض الحصرية المستقلة -->
+    <div id="offersViewWindow" class="fixed inset-0 bg-[#F8FAFC] z-[55] hidden flex-col">
+        <!-- الهيدر الخاص بصفحة العروض -->
+        <header class="bg-gradient-to-r from-red-900 to-red-700 text-white p-5 shadow-xl rounded-b-[2.5rem] flex items-center justify-between sticky top-0 z-40">
+            <div>
+                <h1 class="text-2xl font-black tracking-wider"><i class="fa-solid fa-fire text-yellow-400 mr-2 animate-pulse"></i>العروض الحصرية</h1>
+                <p class="text-[11px] text-red-200 mt-1 font-bold">أحدث التخفيضات (مرتبة من الأحدث للأقدم)</p>
+            </div>
+            <button onclick="window.closeOffersView()" class="w-10 h-10 bg-white/20 rounded-full flex items-center justify-center hover:bg-white/30 transition backdrop-blur-md shadow-lg">
+                <i class="fa-solid fa-arrow-right text-lg"></i>
+            </button>
+        </header>
+
+        <!-- حاوية المنتجات المخفضة (تظهر كشبكة) -->
+        <div class="flex-1 overflow-y-auto p-4 hide-scroll">
+            <div id="exclusiveOffersGrid" class="grid grid-cols-2 md:grid-cols-4 gap-4 pb-24">
+                <!-- المنتجات ستظهر هنا برمجياً -->
+            </div>
+        </div>
+    </div>
 
     <!-- Modal -->
     <div id="modalOverlay" class="fixed inset-0 bg-navy/70 backdrop-blur-sm z-[60] modal-overlay" onclick="closeProductModal()"></div>
@@ -338,6 +372,63 @@ window.handleSearch = function() {
             if (qty + change >= 1) { qty += change; document.getElementById('modalQty').innerText = qty; }
         };
 
+// دوال العروض الحصرية
+        window.openOffersView = function() {
+            // 1. تصفية المنتجات التي تمتلك سعر عرض (offerPrice) وموجود
+            let offers = window.allProducts.filter(p => p.offerPrice && parseFloat(p.offerPrice) > 0);
+            
+            // 2. ترتيب المنتجات من الأحدث للأقدم
+            offers.sort((a, b) => new Date(b.updatedAt || b.createdAt || 0) - new Date(a.updatedAt || a.createdAt || 0));
+
+            const container = document.getElementById('exclusiveOffersGrid');
+            
+            if(offers.length === 0) {
+                container.innerHTML = '<div class="col-span-2 md:col-span-4 text-center py-20 text-gray-500 font-bold text-lg"><i class="fa-solid fa-box-open text-4xl mb-4 opacity-50 block"></i>لا توجد عروض حصرية حالياً</div>';
+            } else {
+                container.innerHTML = offers.map(p => {
+                    const shortDesc = window.getWords(p.description, 8);
+                    const fallbackImg = "https://dummyimage.com/200x200/f3f4f6/0f172a.png&text=لا+توجد+صورة";
+                    const imgUrl = p.imageUrl || fallbackImg;
+                    
+                    // نفس تصميم البطاقة الموجود في الرئيسية مع لمسات حمراء للعروض
+                    return `
+                    <div class="bg-white rounded-3xl shadow-md border-2 border-red-50 p-3 relative flex flex-col justify-between overflow-hidden" onclick="openProductModal('${p.id}')">
+                        <!-- شريط تخفيض -->
+                        <div class="absolute top-0 right-0 bg-red-600 text-white text-[10px] font-black px-3 py-1 rounded-bl-xl z-30 shadow-sm">عرض خاص!</div>
+                        
+                        <div class="absolute top-4 left-4 flex flex-col gap-2 z-20">
+                            <button class="bg-white/90 p-2 rounded-full text-red-500 shadow-sm relative z-20" onclick="addToFavorites(event, '${p.id}')"><i class="fa-regular fa-heart"></i></button>
+                        </div>
+                        
+                        <div class="cursor-pointer mt-3">
+                            <div class="h-32 bg-gray-50 rounded-2xl mb-3 flex items-center justify-center overflow-hidden relative">
+                                <img src="${imgUrl}" class="max-h-full object-contain hover:scale-110 transition duration-300" alt="صورة">
+                            </div>
+                            <h3 class="font-bold text-sm text-navy line-clamp-1 mb-1">${p.name}</h3>
+                            <p class="text-[11px] text-gray-500 mb-2 h-8 overflow-hidden">${shortDesc}</p>
+                            <div class="flex flex-col mb-3 bg-red-50/50 p-2 rounded-xl border border-red-100">
+                                <span class="font-black text-red-600 text-lg">${p.offerPrice} ر.س</span>
+                                <span class="line-through text-gray-400 text-[10px]">${p.price} ر.س</span>
+                            </div>
+                        </div>
+                        <button class="w-full bg-red-600 text-white text-xs font-bold py-2.5 rounded-xl mt-auto hover:bg-red-700 shadow-lg shadow-red-500/30">التفاصيل والشراء</button>
+                    </div>
+                    `;
+                }).join('');
+            }
+
+            // إظهار النافذة الجديدة
+            const view = document.getElementById('offersViewWindow');
+            view.classList.remove('hidden');
+            view.classList.add('flex');
+        };
+
+        window.closeOffersView = function() {
+            const view = document.getElementById('offersViewWindow');
+            view.classList.add('hidden');
+            view.classList.remove('flex');
+        };
+
         // --- البرمجة الحقيقية للسلة والمفضلة والمشاركة ---
         
         window.addToCartAndAnimate = function() {
@@ -389,7 +480,9 @@ window.handleSearch = function() {
             updateQty: window.updateQty,
             addToCartAndAnimate: window.addToCartAndAnimate,
             addToFavorites: window.addToFavorites,
-            shareProduct: window.shareProduct
+            shareProduct: window.shareProduct,
+            openOffersView: window.openOffersView,
+            closeOffersView: window.closeOffersView
         });
     </script>
 </body>
