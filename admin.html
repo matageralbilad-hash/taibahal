@@ -113,7 +113,8 @@
                     <span class="text-gold font-bold">المنتجات المطلوبة:</span> Samsung Galaxy S23 Ultra (الكمية: 1)
                 </div>
             </div>
-            </main>
+        </div> <!-- إغلاق ordersList -->
+    </main>
 
     <!-- نافذة إضافة / تعديل منتج -->
     <div id="addFormModal" class="fixed inset-0 bg-black/80 flex items-center justify-center z-[100] hidden">
@@ -360,9 +361,10 @@ try {
                     const newRef = push(productsRef);
                     await set(newRef, payload);
                 }
-                window.closeModal();
-            } catch (err) {
-                console.error(err);
+                // إغلاق النافذة وتفريغ البيانات بعد الحفظ بنجاح
+                document.getElementById('addFormModal').classList.add('hidden');
+                document.getElementById('productForm').reset();
+            } catch (err) {                console.error(err);
                 alert("حدث خطأ أثناء حفظ المنتج في Firebase");
             } finally {
                 submitBtn.disabled = false;
