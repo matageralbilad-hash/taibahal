@@ -310,6 +310,9 @@
                     allProducts.push({ id: key, ...data[key] });
                 });
             }
+            // السطرين المفقودين لإغلاق جلب البيانات وعرض الرفوف
+            window.renderShelves(allProducts);
+        });
             
         window.renderShelves = function(productsToRender) {
             const container = document.getElementById('shelvesContainer');
